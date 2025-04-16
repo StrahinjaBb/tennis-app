@@ -1,21 +1,20 @@
-// src/pages/LoginPage.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 👈 Importujemo hook
-import { login } from "../api/loginApi"; // prilagodi putanju ako treba
+import { useNavigate } from "react-router-dom";
+import { login } from "../api/logginApi";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); // 👈 Inicijalizacija hook-a
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const data = await login({ username, password });
       localStorage.setItem("token", data.token);
-      navigate("/home"); // 👈 Koristimo React Router za redirekciju
+      navigate("/home");
     } catch (err) {
       setError(err);
     }
