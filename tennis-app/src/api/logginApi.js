@@ -7,7 +7,6 @@ export const login = async (userLogin) => {
     const response = await axios.post(`${API_BASE_URL}/login`, userLogin);
     return response.data;
   } catch (error) {
-    // Ako želiš da dobiješ poruku greške
     throw error.response?.data || "Login failed";
   }
 };
