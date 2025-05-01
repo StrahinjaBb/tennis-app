@@ -23,7 +23,7 @@ public class UserApiModel {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
+        this.password = null;
         this.roleType = roleType;
         this.username = username;
     }

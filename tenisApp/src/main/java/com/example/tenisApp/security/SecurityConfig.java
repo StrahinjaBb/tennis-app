@@ -24,7 +24,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF protection (usually not needed for stateless APIs)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login", "/register", "/auth/login").permitAll()  // Allow login and register routes
+//                        .requestMatchers("/login", "/register", "/auth/login").permitAll()  // Allow login and register routes
                         .anyRequest().permitAll()  // Protect all other routes
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter

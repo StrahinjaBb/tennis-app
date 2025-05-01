@@ -2,12 +2,7 @@ package com.example.tenisApp.model;
 
 import com.example.tenisApp.enums.RoleType;
 import com.example.tenisApp.enums.UserStatus;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "app_user")
@@ -31,6 +26,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RoleType roleType;
 

@@ -14,6 +14,7 @@ export default function LoginPage() {
     try {
       const data = await login({ username, password });
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.id);
       navigate("/home");
     } catch (err) {
       setError(err);

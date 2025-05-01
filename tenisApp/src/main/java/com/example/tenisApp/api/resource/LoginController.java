@@ -2,6 +2,7 @@ package com.example.tenisApp.api.resource;
 
 import com.example.tenisApp.api.models.UserApiModel;
 import com.example.tenisApp.api.request.LoginUserRequest;
+import com.example.tenisApp.api.response.LoginUserResponse;
 import com.example.tenisApp.model.User;
 import com.example.tenisApp.security.JwtTokenProvider;
 import com.example.tenisApp.service.UserService;
@@ -26,16 +27,17 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginUserRequest loginRequest) {
+    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginRequest) {
         UserApiModel user = userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
 
         if (user != null) {
             String token = jwtTokenProvider.generateToken(user.getUsername());
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
+            LoginUserResponse response = new LoginUserResponse();
+            response.setToken(token);
+            response.setId(user.getId());
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));
+            return ResponseEntity.status(401).build();
         }
     }
 
