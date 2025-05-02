@@ -10,9 +10,9 @@ const AppointmetsPage = () => {
 
     const loadAppointments = async () => {
         try {
-            const response = await getAppointments();
-            return response.data;
-        } catch(error) {
+            const data = await getAppointments();
+            setAppointments(data);
+        } catch (error) {
             console.log(error);
         }
     };
@@ -23,7 +23,7 @@ const AppointmetsPage = () => {
             <ul>
                 {appointments.map((appt) => (
                     <li key={appt.id}>
-                        {appt.startTime} - {appt.endTime}{" "}
+                        {appt.startTime} - {appt.endTime} -{" "}
                     </li>
                 ))}
             </ul>

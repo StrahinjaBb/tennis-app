@@ -23,7 +23,7 @@ public class AppointmentController {
         return appointmentService.getAllAppointments();
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     public List<Appointment> getAppointmentsForUser(@PathVariable Long userId) {
         return appointmentService.getAppointmentsForUser(userId);
     }
