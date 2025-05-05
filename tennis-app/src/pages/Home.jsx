@@ -18,7 +18,7 @@ import {
   parseISO,
 } from "date-fns";
 
-export default function Home() {
+const HomePage = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [appointments, setAppointments] = useState([]);
@@ -181,3 +181,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default HomePage;

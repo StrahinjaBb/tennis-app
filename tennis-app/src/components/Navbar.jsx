@@ -1,18 +1,64 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+    const navigate = useNavigate();
+    const userRole = localStorage.getItem('roleType');
+    
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        navigate('/login');
+    }
+
+    const isActive = (path) => location.pathname === path;
+
     return (
-        <nav>
-            <div className="">
-                <h1>Tenis Krstulovic</h1>
-                <div>
-                    <Link>Home</Link>
-                    <Link>Termini</Link>
-                    <Link>Admin</Link>
-                </div>
+      <nav className="bg-gray-800 text-white shadow-lg">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex space-x-4">
+              <Link
+                to="/home"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive('/home') ? 'bg-gray-900' : 'hover:bg-gray-700'
+                }`}
+              >
+                Home
+              </Link>
+              <Link
+                to="/appointments"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive('/appointments') ? 'bg-gray-900' : 'hover:bg-gray-700'
+                }`}
+              >
+                Appointments
+              </Link>
+              {userRole === 'ADMIN' && (
+                <Link
+                  to="/admin"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    isActive('/admin') ? 'bg-gray-900' : 'hover:bg-gray-700'
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
             </div>
-        </nav>
+            <div className="flex items-center">
+              <span className="text-gray-300 mr-4">
+                Welcome, {localStorage.getItem('username')}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
     );
 };
 
-export default Navbar;
+export default Navbar; 

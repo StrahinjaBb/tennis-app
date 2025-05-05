@@ -35,6 +35,7 @@ public class LoginController {
             LoginUserResponse response = new LoginUserResponse();
             response.setToken(token);
             response.setId(user.getId());
+            response.setRoleType(user.getRoleType());
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(401).build();
