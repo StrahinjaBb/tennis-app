@@ -1,5 +1,7 @@
 package com.example.tenisApp.api.resource;
 
+import com.example.tenisApp.api.models.AppointmentApiModel;
+import com.example.tenisApp.dto.conversion.AppointmentConversionUtils;
 import com.example.tenisApp.model.Appointment;
 import com.example.tenisApp.model.User;
 import com.example.tenisApp.service.AppointmentService;
@@ -29,8 +31,8 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public Appointment createAppointment(@RequestBody Appointment appointment) {
-        return appointmentService.createAppointment(appointment);
+    public Appointment createAppointment(@RequestBody AppointmentApiModel appointment) {
+        return appointmentService.createAppointment(AppointmentConversionUtils.apiToDb(appointment));
     }
 
     @DeleteMapping("/{id}")

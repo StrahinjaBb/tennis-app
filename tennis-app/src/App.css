@@ -40,3 +40,53 @@
 .read-the-docs {
   color: #888;
 }
+
+/* src/index.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Calendar overrides */
+/* .rbc-calendar {
+  @apply bg-white rounded-lg shadow;
+}
+
+.rbc-header {
+  @apply py-2 text-gray-700 font-medium;
+}
+
+.rbc-today {
+  @apply bg-blue-50;
+}
+
+.rbc-event {
+  @apply bg-blue-500 border-blue-600 rounded;
+}
+
+.rbc-event-content {
+  @apply text-white;
+}
+
+.rbc-selected {
+  @apply bg-blue-200;
+}
+
+.rbc-button-link {
+  @apply text-gray-800 hover:text-blue-500;
+}
+
+.rbc-time-view .rbc-time-header {
+  @apply border-b border-gray-200;
+}
+
+.rbc-time-view .rbc-time-content {
+  @apply border-t-0;
+}
+
+.rbc-time-header-cell + .rbc-time-header-cell {
+  @apply border-l border-gray-200;
+}
+
+.rbc-time-content {
+  @apply border-t border-gray-200;
+}  */

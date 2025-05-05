@@ -32,6 +32,10 @@ public class UserApiModel {
         this(null, userStatus, firstName, lastName, email, password, roleType, username);
     }
 
+    public UserApiModel(String firstName, String lastName, String email, String username, String password) {
+        this(null, UserStatus.ACTIVE, firstName, lastName, email, password, RoleType.OBSERVER, password);
+    }
+
     public Long getId() {
         return id;
     }
