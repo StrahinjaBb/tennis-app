@@ -8,18 +8,31 @@ export const getUsers = async () => {
 };
 
 export const getUserById = async (userId) => {
-    const response = await axios.get(`${API_BASE_URL}/${userId}`);
-    return response.data;
+  const response = await axios.get(`${API_BASE_URL}/${userId}`);
+  return response.data;
 };
 
-export const createUser = async (user) => {
-    const response = await axios.post(API_BASE_URL, user, {
+export const register = async (userRegister) => {
+    try {
+      //String firstName, String lastName, String email, String username, String password
+      const user = {
+        firstName: userRegister.firstName,
+        lastName: userRegister.lastName,
+        email: userRegister.email,
+        username: userRegister.username,
+        password: userRegister.password,
+      };
+  
+      const response = await axios.post(`${API_BASE_URL}`, userRegister, {
         headers: {
             "Content-Type": "application/json",
         },
-    });
-    return response.data;
-};
+      });
+      return response.data;
+    } catch(error) {
+      throw error.response?.data || "Registration failed";
+    }
+  }
 
 export const deleteUser = async (id) => {
     await axios.delete(`${API_BASE_URL}/${id}`);
