@@ -8,8 +8,8 @@ export const getUsers = async () => {
 };
 
 export const getUserById = async (userId) => {
-    const response = await axios.get(`${API_BASE_URL}/${userId}`);
-    return response.data;
+  const response = await axios.get(`${API_BASE_URL}/${userId}`);
+  return response.data;
 };
 
 export const register = async (userRegister) => {

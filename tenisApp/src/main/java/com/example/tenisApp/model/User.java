@@ -47,6 +47,11 @@ public class User {
         this.username = userName;
     }
 
+    public User(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String userName) {
+        this(userStatus, firstName, lastName, email, password, roleType, userName);
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

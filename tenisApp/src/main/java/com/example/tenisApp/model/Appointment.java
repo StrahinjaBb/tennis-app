@@ -20,6 +20,7 @@ public class Appointment {
 
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
+
     public Appointment() {
 
     }

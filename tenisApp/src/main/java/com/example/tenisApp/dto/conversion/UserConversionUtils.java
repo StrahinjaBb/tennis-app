@@ -17,7 +17,8 @@ public class UserConversionUtils {
     }
 
     public static User apiModelToDbModel(UserApiModel user) {
-        return new User(user.getUserStatus(),
+        return new User(user.getId(),
+                user.getUserStatus(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

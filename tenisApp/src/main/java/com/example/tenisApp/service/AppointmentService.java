@@ -2,7 +2,10 @@ package com.example.tenisApp.service;
 
 import com.example.tenisApp.api.models.UserApiModel;
 import com.example.tenisApp.model.Appointment;
+import com.example.tenisApp.model.User;
 import com.example.tenisApp.repository.AppointmentRepository;
+import com.example.tenisApp.repository.UserRepository;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +13,11 @@ import java.util.List;
 @Service
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
+    private final UserRepository userRepository;
 
-    public AppointmentService(AppointmentRepository appointmentRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Appointment> getAllAppointments() {
@@ -20,6 +25,9 @@ public class AppointmentService {
     }
 
     public Appointment createAppointment(Appointment appointment) {
+        User user = userRepository.findById(appointment.getUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        appointment.setUser(user);
         return appointmentRepository.save(appointment);
     }
 
