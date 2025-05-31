@@ -1,4 +1,3 @@
-// src/pages/PlayersList.jsx
 import { useState, useEffect } from 'react';
 import { getLeaguePlayers } from '../api/userApi';
 
@@ -13,7 +12,6 @@ const PlayersList = () => {
       setLoading(true);
       setError(null);
       
-      // Ispravka: getLeaguePlayers već vraća podatke direktno
       const playersData = await getLeaguePlayers(league);
       setPlayers(playersData);
     } catch (err) {
@@ -32,56 +30,143 @@ const PlayersList = () => {
     setSelectedLeague(e.target.value);
   };
 
-  if (loading) return <div className="p-4">Loading players...</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 max-w-md">
+        <p className="font-medium">Error loading players</p>
+        <p>{error}</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Players List</h1>
-      
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Select League:
-        </label>
-        <select
-          value={selectedLeague}
-          onChange={handleLeagueChange}
-          className="border rounded px-3 py-2 w-40"
-        >
-          <option value="A">League A</option>
-          <option value="B">League B</option>
-        </select>
-      </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Players Ranking</h1>
+          <p className="text-gray-600">View player statistics by league</p>
+        </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-3 px-4 border">Rank</th>
-              <th className="py-3 px-4 border">Name</th>
-              <th className="py-3 px-4 border">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {players && players.length > 0 ? (
-              players.map((player, index) => (
-                <tr key={player.id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border">{index + 1}</td>
-                  <td className="py-2 px-4 border">
-                    {player.firstName} {player.lastName}
-                  </td>
-                  <td className="py-2 px-4 border">{player.points || 0}</td>
+        {/* League Selector */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="w-full sm:w-auto">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select League
+              </label>
+              <select
+                value={selectedLeague}
+                onChange={handleLeagueChange}
+                className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all"
+              >
+                <option value="A">League A</option>
+                <option value="B">League B</option>
+              </select>
+            </div>
+            <div className="w-full sm:w-auto">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                <p className="text-xs text-blue-600 font-medium">TOTAL PLAYERS</p>
+                <p className="text-2xl font-bold text-blue-700">{players.length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Players Table */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-blue-600">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    Rank
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    Player
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    Points
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    League
+                  </th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="py-4 px-4 border text-center">
-                  No players found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {players.length > 0 ? (
+                  players.map((player, index) => (
+                    <tr key={player.id} className="hover:bg-blue-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{index + 1}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span className="text-blue-600 font-medium">
+                              {player.firstName.charAt(0)}{player.lastName.charAt(0)}
+                            </span>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {player.firstName} {player.lastName}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              @{player.username}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900 font-bold">{player.points || 0}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          player.league === 'A' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-purple-100 text-purple-800'
+                        }`}>
+                          {player.league || '-'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                      No players found in this league
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Stats Summary */}
+        {players.length > 0 && (
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm font-medium text-gray-500">Top Player</p>
+              <p className="text-xl font-bold text-gray-900">
+                {players[0].firstName} {players[0].lastName}
+              </p>
+              <p className="text-sm text-gray-500">{players[0].points} points</p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm font-medium text-gray-500">Active Players</p>
+              <p className="text-xl font-bold text-gray-900">
+                {players.filter(p => p.userStatus === 'ACTIVE').length}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

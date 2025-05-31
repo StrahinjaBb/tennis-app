@@ -15,7 +15,6 @@ export const getUserById = async (userId) => {
 
 export const register = async (userRegister) => {
     try {
-      //String firstName, String lastName, String email, String username, String password
       const userApiModel = {
         firstName: userRegister.firstName,
         lastName: userRegister.lastName,

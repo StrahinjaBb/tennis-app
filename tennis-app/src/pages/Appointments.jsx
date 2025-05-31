@@ -23,7 +23,16 @@ const customStyles = {
     transform: 'translate(-50%, -50%)',
     width: '400px',
     maxWidth: '90%',
+    borderRadius: '12px',
+    border: 'none',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+    padding: '24px',
+    background: 'white',
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backdropFilter: 'blur(3px)',
+  }
 };
 
 Modal.setAppElement('#root');
@@ -103,7 +112,7 @@ const AppointmentsPage = () => {
   };
 
   const handleSlotClick = useCallback((slotInfo) => {
-    if (user.roleType !== 'USER' && user.roleType !== 'ADMIN') {
+    if (user?.roleType !== 'USER' && user?.roleType !== 'ADMIN') {
       return;
     }
 
@@ -114,7 +123,7 @@ const AppointmentsPage = () => {
     setSelectedSlot(slotInfo);
     setSelectedEvent(null);
     setModalIsOpen(true);
-  }, [isSlotAvailable]);
+  }, [isSlotAvailable, user]);
 
   const handleEventClick = useCallback((event) => {
     setSelectedEvent(event);
@@ -163,62 +172,95 @@ const AppointmentsPage = () => {
     };
 
     return (
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-4">
-          <button onClick={() => navigateWeek('prev')} className="px-3 py-1 border rounded hover:bg-gray-100">
-            &lt; Previous Week
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => navigateWeek('prev')} 
+            className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+          >
+            &lt; Previous
           </button>
-          <button onClick={goToToday} className="px-3 py-1 border rounded hover:bg-gray-100">
+          <button 
+            onClick={goToToday} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+          >
             Today
           </button>
-          <button onClick={() => navigateWeek('next')} className="px-3 py-1 border rounded hover:bg-gray-100">
-            Next Week &gt;
+          <button 
+            onClick={() => navigateWeek('next')} 
+            className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+          >
+            Next &gt;
           </button>
         </div>
-        <span className="text-lg font-semibold">
+        <h2 className="text-xl font-bold text-gray-800">
           {moment(toolbar.date).tz("Europe/Belgrade").format('MMMM YYYY')}
-        </span>
+        </h2>
       </div>
     );
   };
 
   const EventComponent = ({ event }) => (
-    <div className="p-1 font-semibold">
-      {event.user.firstName} {event.user.lastName}
+    <div className="p-2 bg-blue-50 border border-blue-100 rounded-lg shadow-sm">
+      <div className="font-medium text-blue-800">
+        {event.user.firstName} {event.user.lastName}
+      </div>
+      <div className="text-xs text-blue-600">
+        {moment(event.start).tz("Europe/Belgrade").format('H:mm')} - {moment(event.end).tz("Europe/Belgrade").format('H:mm')}
+      </div>
     </div>
   );
 
-  if (loading) return <div className="p-4">Loading appointments...</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
 
   return (
-    <div className="p-4 h-screen flex flex-col">
-      <h1 className="text-2xl font-bold mb-6">Tennis Court Schedule</h1>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Tennis Court Schedule</h1>
+          <p className="text-gray-600">Book your training sessions and matches</p>
+        </div>
 
-      <div className="flex-grow">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: '100%' }}
-          selectable
-          onSelectSlot={handleSlotClick}
-          onSelectEvent={handleEventClick}
-          defaultView={Views.WEEK}
-          view={Views.WEEK}
-          date={currentDate}
-          onNavigate={setCurrentDate}
-          min={new Date(0, 0, 0, 7, 0, 0)}
-          max={new Date(0, 0, 0, 22, 0, 0)}
-          components={{
-            event: EventComponent,
-            toolbar: CustomToolbar,
-          }}
-          step={30}
-          timeslots={2}
-        />
+        {/* Calendar Container */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: '70vh' }}
+            selectable
+            onSelectSlot={handleSlotClick}
+            onSelectEvent={handleEventClick}
+            defaultView={Views.WEEK}
+            view={Views.WEEK}
+            date={currentDate}
+            onNavigate={setCurrentDate}
+            min={new Date(0, 0, 0, 7, 0, 0)}
+            max={new Date(0, 0, 0, 22, 0, 0)}
+            components={{
+              event: EventComponent,
+              toolbar: CustomToolbar,
+            }}
+            step={30}
+            timeslots={2}
+            eventPropGetter={(event) => ({
+              style: {
+                backgroundColor: '#EFF6FF',
+                borderColor: '#BFDBFE',
+                color: '#1E40AF',
+              },
+            })}
+          />
+        </div>
       </div>
 
+      {/* Appointment Details Modal */}
       {selectedEvent && (
         <Modal
           isOpen={modalIsOpen}
@@ -226,33 +268,31 @@ const AppointmentsPage = () => {
           style={customStyles}
           contentLabel="Appointment Details"
         >
-          <h2 className="text-xl font-bold mb-4">Appointment Details</h2>
-          <div className="mb-4">
-            <div className="border p-2 rounded">
-              <div className="font-medium mb-2">
-                With: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
-              </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Appointment Details</h2>
+          <div className="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
+            <div className="font-medium text-blue-800 mb-2">
+              With: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
+            </div>
+            <div className="text-gray-700">
+              <div>{moment(selectedEvent.start).tz("Europe/Belgrade").format('MMMM Do YYYY')}</div>
               <div>
-                <div>{moment(selectedEvent.start).tz("Europe/Belgrade").format('MMMM Do YYYY')}</div>
-                <div>
-                  {moment(selectedEvent.start).tz("Europe/Belgrade").format('H:mm')} - {moment(selectedEvent.end).tz("Europe/Belgrade").format('H:mm')}
-                </div>
+                {moment(selectedEvent.start).tz("Europe/Belgrade").format('H:mm')} - {moment(selectedEvent.end).tz("Europe/Belgrade").format('H:mm')}
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2">
-            {((user && selectedEvent.user.id === user.id) || user.roleType === 'ADMIN') && (
+          <div className="flex justify-end space-x-3">
+            {((user && selectedEvent.user.id === user.id) || user?.roleType === 'ADMIN') && (
               <button
                 onClick={onDeleteAppointment}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
               >
-                Delete Appointment
+                Cancel Booking
               </button>
             )}
             <button
               onClick={() => setModalIsOpen(false)}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
+              className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
               Close
             </button>
@@ -260,6 +300,7 @@ const AppointmentsPage = () => {
         </Modal>
       )}
 
+      {/* Create Appointment Modal */}
       {selectedSlot && (
         <Modal
           isOpen={modalIsOpen}
@@ -267,11 +308,11 @@ const AppointmentsPage = () => {
           style={customStyles}
           contentLabel="Create Appointment"
         >
-          <h2 className="text-xl font-bold mb-4">Create New Appointment</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Court Time</h2>
           <form onSubmit={handleSubmit(onCreateAppointment)}>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Date & Time</label>
-              <div className="border p-2 rounded">
+            <div className="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
+              <label className="block text-sm font-medium text-blue-800 mb-1">Date & Time</label>
+              <div className="text-gray-700">
                 {selectedSlot && (
                   <>
                     <div>{moment(selectedSlot.start).tz("Europe/Belgrade").format('MMMM Do YYYY')}</div>
@@ -283,19 +324,19 @@ const AppointmentsPage = () => {
               </div>
             </div>
 
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-3">
               <button
                 type="button"
                 onClick={() => setModalIsOpen(false)}
-                className="px-4 py-2 border rounded hover:bg-gray-100"
+                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
-                Book Appointment
+                Confirm Booking
               </button>
             </div>
           </form>
