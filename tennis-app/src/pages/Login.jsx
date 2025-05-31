@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/logginApi";
+import '../App.css';
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -41,7 +42,7 @@ const LoginPage = () => {
               required
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-8">
             <label className="block text-gray-700 mb-2" htmlFor="password">
               Password
             </label>
@@ -57,7 +58,7 @@ const LoginPage = () => {
           <div className="flex justify-between items-center">
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
             >
               Login
             </button>

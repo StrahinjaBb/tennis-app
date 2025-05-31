@@ -7,6 +7,7 @@ import AppointmentsPage from './pages/Appointments';
 import UserManagement from './pages/UserManagement';
 import PlayersList from './pages/PlayersList';
 import Navbar from './components/Navbar';
+import './App.css';
 
 const AppLayout = ({ children }) => (
   <div className="flex flex-col min-h-screen">

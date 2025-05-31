@@ -53,9 +53,6 @@ const Navbar = () => {
               </Link>
             </div>
             <div className="flex items-center">
-              <span className="text-gray-300 mr-4">
-                Welcome, {localStorage.getItem('username')}
-              </span>
               <button
                 onClick={handleLogout}
                 className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium"

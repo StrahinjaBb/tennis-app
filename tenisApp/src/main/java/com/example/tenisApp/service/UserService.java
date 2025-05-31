@@ -52,6 +52,7 @@ public class UserService {
             models.add(UserConversionUtils.dbModelToApiModel(user));
         }
 
+        models.sort((u1, u2) -> u1.getFirstName().compareToIgnoreCase(u2.getFirstName()));
         return models;
     }
 
