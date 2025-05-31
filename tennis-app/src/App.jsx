@@ -1,10 +1,9 @@
-// src/App.js
+// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import HomePage from './pages/Home';
 import AppointmentsPage from './pages/Appointments';
-// import AdminPage from './pages/Admin';
 import Navbar from './components/Navbar';
 
 const AppLayout = ({ children }) => (
@@ -15,59 +14,36 @@ const AppLayout = ({ children }) => (
 );
 
 const App = () => {
-  const isAuthenticated = !!localStorage.getItem('token');
-
   return (
     <Router>
       <Routes>
-        <Route
-          path="/login"
-          element={isAuthenticated ? <Navigate to="/home" /> : <LoginPage />}
-        />
-        <Route
-          path="/register"
-          element={isAuthenticated ? <Navigate to="/home" /> : <RegisterPage />}
-        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/home"
           element={
-            isAuthenticated ? (
-              <AppLayout>
-                <HomePage />
-              </AppLayout>
-            ) : (
-              <Navigate to="/login" />
-            )
+            <AppLayout>
+              <HomePage />
+            </AppLayout>
           }
         />
         <Route
           path="/appointments"
           element={
-            isAuthenticated ? (
-              <AppLayout>
-                <AppointmentsPage />
-              </AppLayout>
-            ) : (
-              <Navigate to="/login" />
-            )
+            <AppLayout>
+              <AppointmentsPage />
+            </AppLayout>
           }
         />
         {/* <Route
           path="/admin"
           element={
-            isAuthenticated && localStorage.getItem('userRole') === 'ADMIN' ? (
-              <AppLayout>
-                <AdminPage />
-              </AppLayout>
-            ) : (
-              <Navigate to="/home" />
-            )
+            <AppLayout>
+              <AdminPage />
+            </AppLayout>
           }
         /> */}
-        <Route
-          path="/"
-          element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />}
-        />
+        <Route path="/" element={<Navigate to="/home" />} />
       </Routes>
     </Router>
   );
