@@ -1,6 +1,7 @@
 package com.example.tenisApp.dto;
 
 import com.example.tenisApp.api.models.UserApiModel;
+import com.example.tenisApp.enums.League;
 import com.example.tenisApp.enums.RoleType;
 import com.example.tenisApp.enums.UserStatus;
 
@@ -13,6 +14,22 @@ public class UserDTO {
     private String password;
     private RoleType roleType;
     private String username;
+    private League league;
+    private Integer points;
+
+
+    public UserDTO(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username, League league, Integer points) {
+        this.id = id;
+        this.userStatus = userStatus;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.roleType = roleType;
+        this.username = username;
+        this.league = league;
+        this.points = points;
+    }
 
     public UserDTO(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username) {
         this.id = id;
@@ -101,5 +118,21 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public League getLeague() {
+        return league;
+    }
+
+    public void setLeague(League league) {
+        this.league = league;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 }

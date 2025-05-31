@@ -1,9 +1,7 @@
 package com.example.tenisApp.api.resource;
 
 import com.example.tenisApp.api.models.UserApiModel;
-import com.example.tenisApp.api.request.CreateUserRequest;
-import com.example.tenisApp.api.request.GetUserRequest;
-import com.example.tenisApp.api.request.UpdateUserRole;
+import com.example.tenisApp.api.request.*;
 import com.example.tenisApp.dto.conversion.UserConversionUtils;
 import com.example.tenisApp.model.User;
 import com.example.tenisApp.service.UserService;
@@ -31,6 +29,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserApiModel> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping("/league")
+    public ResponseEntity<List<UserApiModel>> getLeagueUsers(@RequestBody GetLeagueUsersRequest request) {
+        return ResponseEntity.ok(userService.getLeagueUsers(request.getLeague()));
     }
 
     @PostMapping
@@ -61,4 +64,38 @@ public class UserController {
 
         return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
     }
-}
+
+    @PutMapping("/{id}/points")
+    public ResponseEntity updatePoints(@PathVariable Long id, @RequestBody UpdateUserPoints request) {
+        User user = userService.getDbUserById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (user.getPoints() == null) {
+            user.setPoints(request.getPoints());
+            User updatedUser = userService.saveUser(user);
+            return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
+        }
+
+        Integer newPoints = user.getPoints() + request.getPoints();
+        user.setPoints(newPoints);
+        User updatedUser = userService.saveUser(user);
+
+        return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
+    }
+
+    @PutMapping("/{id}/league")
+    public ResponseEntity updateLeague(@PathVariable Long id, @RequestBody UpdateUserLeague request) {
+        User user = userService.getDbUserById(id);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        user.setLeague(request.getLeague());
+        User updatedUser = userService.saveUser(user);
+
+        return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
+    }
+ }
