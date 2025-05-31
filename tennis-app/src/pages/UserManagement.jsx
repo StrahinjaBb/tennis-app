@@ -81,7 +81,6 @@ const UserManagement = () => {
         <table className="min-w-full bg-white border">
           <thead>
             <tr className="bg-gray-100">
-              <th className="py-3 px-4 border">ID</th>
               <th className="py-3 px-4 border">Name</th>
               <th className="py-3 px-4 border">Email</th>
               <th className="py-3 px-4 border">Role</th>
@@ -94,7 +93,6 @@ const UserManagement = () => {
           <tbody>
             {users.map(user => (
               <tr key={user.id} className="hover:bg-gray-50">
-                <td className="py-2 px-4 border">{user.id}</td>
                 <td className="py-2 px-4 border">{user.firstName} {user.lastName}</td>
                 <td className="py-2 px-4 border">{user.email}</td>
                 
@@ -105,6 +103,7 @@ const UserManagement = () => {
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
                     className="border rounded px-2 py-1 w-full"
                   >
+                    <option value="">- Select -</option>
                     <option value="ADMIN">ADMIN</option>
                     <option value="USER">USER</option>
                     <option value="OBSERVER">OBSERVER</option>

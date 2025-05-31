@@ -16,15 +16,16 @@ export const getUserById = async (userId) => {
 export const register = async (userRegister) => {
     try {
       //String firstName, String lastName, String email, String username, String password
-      const user = {
+      const userApiModel = {
         firstName: userRegister.firstName,
         lastName: userRegister.lastName,
         email: userRegister.email,
         username: userRegister.username,
         password: userRegister.password,
+        userStatus: 'ACTIVE'
       };
   
-      const response = await axios.post(`${API_BASE_URL}`, userRegister, {
+      const response = await axios.post(`${API_BASE_URL}`, { userApiModel }, {
         headers: {
             "Content-Type": "application/json",
         },

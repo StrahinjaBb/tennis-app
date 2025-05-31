@@ -42,7 +42,7 @@ public class UserApiModel {
     }
 
     public UserApiModel(String firstName, String lastName, String email, String username, String password) {
-        this(null, UserStatus.ACTIVE, firstName, lastName, email, password, RoleType.OBSERVER, password);
+        this(null, UserStatus.ACTIVE, firstName, lastName, email, password, RoleType.OBSERVER, username);
     }
 
     public Long getId() {
