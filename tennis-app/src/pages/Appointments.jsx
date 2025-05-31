@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { getAppointments, createAppointment, deleteAppointment } from '../api/appointmentApi';
 import { useForm } from 'react-hook-form';
@@ -10,10 +10,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// Set up moment localizer
+moment.tz.setDefault("Europe/Belgrade");
 const localizer = momentLocalizer(moment);
 
-// Modal styles
 const customStyles = {
   content: {
     top: '50%',
@@ -40,7 +39,6 @@ const AppointmentsPage = () => {
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
 
-  // Check if time slot is available
   const isSlotAvailable = useCallback((start, end) => {
     return !events.some(event => {
       const eventStart = new Date(event.start);
@@ -70,7 +68,6 @@ const AppointmentsPage = () => {
     fetchUser();
   }, [navigate]);
 
-  // Fetch appointments
   const fetchAppointments = useCallback(async () => {
     try {
       const response = await getAppointments();
@@ -93,7 +90,6 @@ const AppointmentsPage = () => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  // Handle navigation between weeks
   const navigateWeek = (direction) => {
     setCurrentDate(prevDate => {
       const newDate = new Date(prevDate);
@@ -106,8 +102,11 @@ const AppointmentsPage = () => {
     });
   };
 
-  // Handle empty slot click (create new)
   const handleSlotClick = useCallback((slotInfo) => {
+    if (user.roleType !== 'USER' && user.roleType !== 'ADMIN') {
+      return;
+    }
+
     if (!isSlotAvailable(slotInfo.start, slotInfo.end)) {
       toast.error('This time slot is already booked');
       return;
@@ -117,15 +116,13 @@ const AppointmentsPage = () => {
     setModalIsOpen(true);
   }, [isSlotAvailable]);
 
-  // Handle existing event click (view details)
   const handleEventClick = useCallback((event) => {
     setSelectedEvent(event);
     setSelectedSlot(null);
     setModalIsOpen(true);
   }, []);
 
-  // Handle appointment creation
-  const onCreateAppointment = async (data) => {
+  const onCreateAppointment = async () => {
     try {
       if (!isSlotAvailable(selectedSlot.start, selectedSlot.end)) {
         toast.error('This time slot is no longer available');
@@ -133,10 +130,11 @@ const AppointmentsPage = () => {
       }
 
       const appointmentData = {
-        startTime: selectedSlot.start.toISOString(),
-        endTime: selectedSlot.end.toISOString(),
+        startTime: moment(selectedSlot.start).tz("Europe/Belgrade").format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: moment(selectedSlot.end).tz("Europe/Belgrade").format('YYYY-MM-DDTHH:mm:ss'),
         user: user
       };
+
       await createAppointment(appointmentData);
       await fetchAppointments();
       setModalIsOpen(false);
@@ -147,7 +145,6 @@ const AppointmentsPage = () => {
     }
   };
 
-  // Handle appointment deletion
   const onDeleteAppointment = async () => {
     try {
       await deleteAppointment(selectedEvent.id);
@@ -159,7 +156,6 @@ const AppointmentsPage = () => {
     }
   };
 
-  // Custom toolbar with week navigation
   const CustomToolbar = (toolbar) => {
     const goToToday = () => {
       toolbar.onNavigate('TODAY');
@@ -169,33 +165,23 @@ const AppointmentsPage = () => {
     return (
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-4">
-          <button 
-            onClick={() => navigateWeek('prev')}
-            className="px-3 py-1 border rounded hover:bg-gray-100"
-          >
+          <button onClick={() => navigateWeek('prev')} className="px-3 py-1 border rounded hover:bg-gray-100">
             &lt; Previous Week
           </button>
-          <button 
-            onClick={goToToday}
-            className="px-3 py-1 border rounded hover:bg-gray-100"
-          >
+          <button onClick={goToToday} className="px-3 py-1 border rounded hover:bg-gray-100">
             Today
           </button>
-          <button 
-            onClick={() => navigateWeek('next')}
-            className="px-3 py-1 border rounded hover:bg-gray-100"
-          >
+          <button onClick={() => navigateWeek('next')} className="px-3 py-1 border rounded hover:bg-gray-100">
             Next Week &gt;
           </button>
         </div>
         <span className="text-lg font-semibold">
-          {moment(toolbar.date).format('MMMM YYYY')}
+          {moment(toolbar.date).tz("Europe/Belgrade").format('MMMM YYYY')}
         </span>
       </div>
     );
   };
 
-  // Event component
   const EventComponent = ({ event }) => (
     <div className="p-1 font-semibold">
       {event.user.firstName} {event.user.lastName}
@@ -207,7 +193,7 @@ const AppointmentsPage = () => {
   return (
     <div className="p-4 h-screen flex flex-col">
       <h1 className="text-2xl font-bold mb-6">Tennis Court Schedule</h1>
-      
+
       <div className="flex-grow">
         <Calendar
           localizer={localizer}
@@ -222,18 +208,17 @@ const AppointmentsPage = () => {
           view={Views.WEEK}
           date={currentDate}
           onNavigate={setCurrentDate}
-          min={new Date(0, 0, 0, 7, 0, 0)} // 7 AM
-          max={new Date(0, 0, 0, 22, 0, 0)} // 10 PM
+          min={new Date(0, 0, 0, 7, 0, 0)}
+          max={new Date(0, 0, 0, 22, 0, 0)}
           components={{
             event: EventComponent,
             toolbar: CustomToolbar,
           }}
-          step={30} // 30 minute intervals
-          timeslots={2} // 2 timeslots per hour
+          step={30}
+          timeslots={2}
         />
       </div>
 
-      {/* Modal for viewing existing appointment */}
       {selectedEvent && (
         <Modal
           isOpen={modalIsOpen}
@@ -248,14 +233,14 @@ const AppointmentsPage = () => {
                 With: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
               </div>
               <div>
-                <div>{moment(selectedEvent.start).format('MMMM Do YYYY')}</div>
+                <div>{moment(selectedEvent.start).tz("Europe/Belgrade").format('MMMM Do YYYY')}</div>
                 <div>
-                  {moment(selectedEvent.start).format('h:mm A')} - {moment(selectedEvent.end).format('h:mm A')}
+                  {moment(selectedEvent.start).tz("Europe/Belgrade").format('H:mm')} - {moment(selectedEvent.end).tz("Europe/Belgrade").format('H:mm')}
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end space-x-2">
             {((user && selectedEvent.user.id === user.id) || user.roleType === 'ADMIN') && (
               <button
@@ -275,7 +260,6 @@ const AppointmentsPage = () => {
         </Modal>
       )}
 
-      {/* Modal for creating new appointment */}
       {selectedSlot && (
         <Modal
           isOpen={modalIsOpen}
@@ -290,15 +274,15 @@ const AppointmentsPage = () => {
               <div className="border p-2 rounded">
                 {selectedSlot && (
                   <>
-                    <div>{moment(selectedSlot.start).format('MMMM Do YYYY')}</div>
+                    <div>{moment(selectedSlot.start).tz("Europe/Belgrade").format('MMMM Do YYYY')}</div>
                     <div>
-                      {moment(selectedSlot.start).format('h:mm A')} - {moment(selectedSlot.end).format('h:mm A')}
+                      {moment(selectedSlot.start).tz("Europe/Belgrade").format('H:mm')} - {moment(selectedSlot.end).tz("Europe/Belgrade").format('H:mm')}
                     </div>
                   </>
                 )}
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-2">
               <button
                 type="button"

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ca } from "date-fns/locale";
 
 const API_BASE_URL = "http://localhost:8080/users";
 
@@ -32,7 +33,59 @@ export const register = async (userRegister) => {
     } catch(error) {
       throw error.response?.data || "Registration failed";
     }
+};
+
+export const updateUserRole = async (userId, role) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/${userId}/role`, { roleType: role }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data;
   }
+}
+
+export const updateUserPoints = async (userId, points) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/${userId}/points`, { points: parseInt(points) }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data;
+  }
+}
+
+export const updateUserLeague = async (userId, league) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/${userId}/league`, { league }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data;
+  }
+}
+
+export const getLeaguePlayers = async (league) => {
+   try {
+    const response = await axios.post(`${API_BASE_URL}/league`, { league: league }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data;
+  }
+}
 
 export const deleteUser = async (id) => {
     await axios.delete(`${API_BASE_URL}/${id}`);

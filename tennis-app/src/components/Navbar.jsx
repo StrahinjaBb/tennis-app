@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const userRole = localStorage.getItem('roleType');
+    const userRole = localStorage.getItem('userRole');
     
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -43,6 +43,14 @@ const Navbar = () => {
                   Admin
                 </Link>
               )}
+              <Link
+                to="/players"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive('/players') ? 'bg-gray-900' : 'hover:bg-gray-700'
+                }`}
+              >
+                Players
+              </Link>
             </div>
             <div className="flex items-center">
               <span className="text-gray-300 mr-4">

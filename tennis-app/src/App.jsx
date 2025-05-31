@@ -4,6 +4,8 @@ import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import HomePage from './pages/Home';
 import AppointmentsPage from './pages/Appointments';
+import UserManagement from './pages/UserManagement';
+import PlayersList from './pages/PlayersList';
 import Navbar from './components/Navbar';
 
 const AppLayout = ({ children }) => (
@@ -35,14 +37,22 @@ const App = () => {
             </AppLayout>
           }
         />
-        {/* <Route
+        <Route
           path="/admin"
           element={
             <AppLayout>
-              <AdminPage />
+              <UserManagement />
             </AppLayout>
           }
-        /> */}
+        />
+        <Route
+          path="/players"
+          element={
+            <AppLayout>
+              <PlayersList />
+            </AppLayout>
+          }
+        />
         <Route path="/" element={<Navigate to="/home" />} />
       </Routes>
     </Router>

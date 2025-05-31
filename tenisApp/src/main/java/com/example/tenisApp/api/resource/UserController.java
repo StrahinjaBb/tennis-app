@@ -31,7 +31,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @GetMapping("/league")
+    @PostMapping("/league")
     public ResponseEntity<List<UserApiModel>> getLeagueUsers(@RequestBody GetLeagueUsersRequest request) {
         return ResponseEntity.ok(userService.getLeagueUsers(request.getLeague()));
     }

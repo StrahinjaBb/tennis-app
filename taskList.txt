@@ -4,8 +4,8 @@
 
 3) Dodaj user-ima u bazi broj bodova i ligu koju igraju - gotovo
 
-4) Dodaj stranicu za A i B ligu sa listom koristnika i njihovim bodovima - orderd
+4) Dodaj stranicu za A i B ligu sa listom koristnika i njihovim bodovima - orderd gotovo
 
-5) Admin stranica za upravljanje user-ima
+5) Admin stranica za upravljanje user-ima gotovo
 
 Ako nisi moron, ovo mozes sutra da zavrsis...
