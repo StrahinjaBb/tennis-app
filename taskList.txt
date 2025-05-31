@@ -1,9 +1,11 @@
 1) Sredi login i password protection - has code etc...
 
-2) Sredi bazu da appointment-i imaju naziv - naravno i ceo API i UI
+2) Sredi bazu da appointment-i imaju naziv - naravno i ceo API i UI - ne mora, nek se zove po user-u
 
-3) Dodaj user-ima u bazi broj bodova i ligu koju igraju
+3) Dodaj user-ima u bazi broj bodova i ligu koju igraju - gotovo
 
 4) Dodaj stranicu za A i B ligu sa listom koristnika i njihovim bodovima - orderd
+
+5) Admin stranica za upravljanje user-ima
 
 Ako nisi moron, ovo mozes sutra da zavrsis...

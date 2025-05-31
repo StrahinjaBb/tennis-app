@@ -1,5 +1,6 @@
 package com.example.tenisApp.model;
 
+import com.example.tenisApp.enums.League;
 import com.example.tenisApp.enums.RoleType;
 import com.example.tenisApp.enums.UserStatus;
 import jakarta.persistence.*;
@@ -33,8 +34,31 @@ public class User {
     @Column(nullable = false)
     private String username;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 1)
+    private League league;;
+
+    @Column(nullable = false)
+    private Integer points;
+
     public User() {
 
+    }
+
+    public League getLeague() {
+        return league;
+    }
+
+    public void setLeague(League league) {
+        this.league = league;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 
     public User(UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String userName) {
@@ -50,6 +74,12 @@ public class User {
     public User(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String userName) {
         this(userStatus, firstName, lastName, email, password, roleType, userName);
         this.id = id;
+    }
+
+    public User(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String userName, League league, Integer points) {
+        this(id, userStatus, firstName, lastName, email, password, roleType, userName);
+        this.league = league;
+        this.points = points;
     }
 
     public Long getId() {

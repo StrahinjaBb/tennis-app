@@ -1,5 +1,6 @@
 package com.example.tenisApp.api.models;
 
+import com.example.tenisApp.enums.League;
 import com.example.tenisApp.enums.RoleType;
 import com.example.tenisApp.enums.UserStatus;
 
@@ -12,9 +13,17 @@ public class UserApiModel {
     private String password;
     private RoleType roleType;
     private String username;
+    private League league;
+    private Integer points;
 
     public UserApiModel() {
 
+    }
+
+    public UserApiModel(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username, League league, Integer points) {
+        this(id, userStatus, firstName, lastName, email, password, roleType, username);
+        this.league = league;
+        this.points = points;
     }
 
     public UserApiModel(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username) {
@@ -98,5 +107,21 @@ public class UserApiModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public League getLeague() {
+        return league;
+    }
+
+    public void setLeague(League league) {
+        this.league = league;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 }
