@@ -8,7 +8,6 @@ import com.example.tenisApp.model.User;
 import com.example.tenisApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,12 +18,9 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(User user) {
@@ -89,25 +85,12 @@ public class UserService {
     }
 
     public UserApiModel authenticate(String username, String password) {
-        Optional<User> userOpt = userRepository.findByUsername(username);
-
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            if (passwordEncoder.matches(password, user.getPassword())) {
+        for (User user : userRepository.findAll()) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 return UserConversionUtils.dbModelToApiModel(user);
             }
         }
 
         return null;
-    }
-
-    public void migratePasswords() {
-        List<User> users = userRepository.findAll();
-        for (User user : users) {
-            if (!user.getPassword().startsWith("$2a$")) { // Provera da li je već hashovano
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
-                userRepository.save(user);
-            }
-        }
     }
 }

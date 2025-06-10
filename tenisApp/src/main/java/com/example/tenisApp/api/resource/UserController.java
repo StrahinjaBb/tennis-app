@@ -98,10 +98,4 @@ public class UserController {
 
         return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
     }
-
-    @PutMapping("/migrate")
-    public ResponseEntity migratePasswords() {
-        userService.migratePasswords();
-        return ResponseEntity.ok().build();
-    }
  }

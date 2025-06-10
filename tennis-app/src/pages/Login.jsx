@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/logginApi";
-import { hashPassword, comparePasswords } from "../api/authUtils";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -14,9 +13,8 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const hashedPassword = hashPassword(password);
     try {
-      const data = await login({ username, hashedPassword });
+      const data = await login({ username, password });
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.id);
       localStorage.setItem("userRole", data.roleType);
