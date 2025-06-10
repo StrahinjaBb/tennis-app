@@ -4,7 +4,7 @@ import {
   updateUserRole, 
   updateUserPoints, 
   updateUserLeague, 
-  deleteUser 
+  deleteUser, 
 } from '../api/userApi';
 import Modal from 'react-modal';
 
@@ -14,6 +14,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pointsInput, setPointsInput] = useState({});
+  const [matchesInput, setMatchesInput] = useState({});
   const [error, setError] = useState(null);
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -40,7 +41,6 @@ const UserManagement = () => {
     }
   };
 
-  // Učitaj korisnike
   useEffect(() => {
     loadUsers();
   }, []);
@@ -59,7 +59,6 @@ const UserManagement = () => {
     }
   };
 
-  // Handleri za ažuriranje
   const handleRoleChange = async (userId, newRole) => {
     try {
       await updateUserRole(userId, newRole);
@@ -145,6 +144,7 @@ const UserManagement = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Role</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">League</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Points</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Matches</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Add Points</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
                 </tr>
@@ -197,6 +197,9 @@ const UserManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
                       {user.points || 0}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                      {user.matches || 0}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex">

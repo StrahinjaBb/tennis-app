@@ -41,6 +41,9 @@ public class User {
     @Column(nullable = false)
     private Integer points;
 
+    @Column(nullable = false)
+    private Integer matches;
+
     public User() {
 
     }
@@ -61,6 +64,23 @@ public class User {
         this.points = points;
     }
 
+    public Integer getMatches() {
+        return matches;
+    }
+
+    public void setMatches(Integer matches) {
+        this.matches = matches;
+    }
+
+    public void increaseMatches() {
+        if (this.matches == null) {
+            this.matches = 1;
+            return;
+        }
+
+        this.matches += 1;
+    }
+
     public User(UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String userName) {
         this.userStatus = userStatus;
         this.firstName = firstName;
@@ -76,10 +96,11 @@ public class User {
         this.id = id;
     }
 
-    public User(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String userName, League league, Integer points) {
+    public User(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String userName, League league, Integer points, Integer matches) {
         this(id, userStatus, firstName, lastName, email, password, roleType, userName);
         this.league = league;
         this.points = points;
+        this.matches = matches;
     }
 
     public Long getId() {

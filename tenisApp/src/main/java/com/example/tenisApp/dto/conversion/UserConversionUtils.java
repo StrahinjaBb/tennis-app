@@ -15,7 +15,8 @@ public class UserConversionUtils {
                 user.getRoleType(),
                 user.getUsername(),
                 user.getLeague(),
-                user.getPoints());
+                user.getPoints(),
+                user.getMatches());
     }
 
     public static User apiModelToDbModel(UserApiModel user) {
@@ -28,7 +29,8 @@ public class UserConversionUtils {
                 user.getRoleType(),
                 user.getUsername(),
                 user.getLeague(),
-                user.getPoints());
+                user.getPoints(),
+                user.getMatches());
     }
 
     public static UserDTO apiToDTO(UserApiModel userApiModel) {
@@ -41,7 +43,8 @@ public class UserConversionUtils {
                 userApiModel.getRoleType(),
                 userApiModel.getUsername(),
                 userApiModel.getLeague(),
-                userApiModel.getPoints());
+                userApiModel.getPoints(),
+                userApiModel.getMatches());
     }
 
     public static UserDTO dbToDto(User user) {
@@ -65,6 +68,7 @@ public class UserConversionUtils {
                 user.getRoleType(),
                 user.getUsername(),
                 user.getLeague(),
-                user.getPoints());
+                user.getPoints(),
+                user.getMatches());
     }
 }

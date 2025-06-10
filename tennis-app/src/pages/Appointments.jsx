@@ -102,9 +102,29 @@ const AppointmentsPage = () => {
   const navigateWeek = (direction) => {
     setCurrentDate(prevDate => {
       const newDate = new Date(prevDate);
+      const today = new Date();
+      const twoWeeksLater = new Date(today);
+      twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+      const twoWeeksBefore = new Date(today);
+      twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
+
       if (direction === 'next') {
+        // Proveri da li je nova nedelja unutar dozvoljenog opsega
+        const testDate = new Date(newDate);
+        testDate.setDate(testDate.getDate() + 7);
+        if (testDate > twoWeeksLater) {
+          toast.info('Možete videti samo dve nedelje unapred');
+          return newDate;
+        }
         newDate.setDate(newDate.getDate() + 7);
       } else {
+        // Proveri da li je nova nedelja unutar dozvoljenog opsega
+        const testDate = new Date(newDate);
+        testDate.setDate(testDate.getDate() - 7);
+        if (testDate < twoWeeksBefore) {
+          toast.info('Možete videti samo dve nedelje unazad');
+          return newDate;
+        }
         newDate.setDate(newDate.getDate() - 7);
       }
       return newDate;
@@ -178,19 +198,19 @@ const AppointmentsPage = () => {
             onClick={() => navigateWeek('prev')} 
             className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
-            &lt; Previous
+            &lt; Prethodno
           </button>
           <button 
             onClick={goToToday} 
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
           >
-            Today
+            Danas
           </button>
           <button 
             onClick={() => navigateWeek('next')} 
             className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
-            Next &gt;
+            Dalje &gt;
           </button>
         </div>
         <h2 className="text-xl font-bold text-gray-800">
@@ -201,11 +221,11 @@ const AppointmentsPage = () => {
   };
 
   const EventComponent = ({ event }) => (
-    <div className="p-2 bg-blue-50 border border-blue-100 rounded-lg shadow-sm">
-      <div className="font-medium text-blue-800">
+    <div className="p-2 bg-blue-600 text-white rounded-lg shadow-sm">
+      <div className="font-medium">
         {event.user.firstName} {event.user.lastName}
       </div>
-      <div className="text-xs text-blue-600">
+      <div className="text-xs">
         {moment(event.start).tz("Europe/Belgrade").format('H:mm')} - {moment(event.end).tz("Europe/Belgrade").format('H:mm')}
       </div>
     </div>
@@ -222,8 +242,8 @@ const AppointmentsPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Tennis Court Schedule</h1>
-          <p className="text-gray-600">Book your training sessions and matches</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Raspored termina</h1>
+          <p className="text-gray-600">Zakažite termine</p>
         </div>
 
         {/* Calendar Container */}
@@ -242,7 +262,7 @@ const AppointmentsPage = () => {
             date={currentDate}
             onNavigate={setCurrentDate}
             min={new Date(0, 0, 0, 7, 0, 0)}
-            max={new Date(0, 0, 0, 22, 0, 0)}
+            max={new Date(0, 0, 0, 23, 59, 0)}
             components={{
               event: EventComponent,
               toolbar: CustomToolbar,
@@ -251,9 +271,9 @@ const AppointmentsPage = () => {
             timeslots={2}
             eventPropGetter={(event) => ({
               style: {
-                backgroundColor: '#EFF6FF',
-                borderColor: '#BFDBFE',
-                color: '#1E40AF',
+                backgroundColor: '#2563EB',
+                borderColor: '#1D4ED8',
+                color: '#FFFFFF',
               },
             })}
           />

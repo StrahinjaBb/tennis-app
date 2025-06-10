@@ -95,6 +95,9 @@ const PlayersList = () => {
                     Points
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    Matches
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                     League
                   </th>
                 </tr>
@@ -127,6 +130,9 @@ const PlayersList = () => {
                         <div className="text-sm text-gray-900 font-bold">{player.points || 0}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900 font-bold">{player.matches || 0}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           player.league === 'A' 
                             ? 'bg-green-100 text-green-800' 
@@ -139,7 +145,7 @@ const PlayersList = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
                       No players found in this league
                     </td>
                   </tr>
@@ -158,6 +164,15 @@ const PlayersList = () => {
                 {players[0].firstName} {players[0].lastName}
               </p>
               <p className="text-sm text-gray-500">{players[0].points} points</p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm font-medium text-gray-500">Most Matches</p>
+              <p className="text-xl font-bold text-gray-900">
+                {players.reduce((prev, current) => (prev.matches > current.matches) ? prev : current).firstName}
+              </p>
+              <p className="text-sm text-gray-500">
+                {players.reduce((prev, current) => (prev.matches > current.matches) ? prev : current).matches} matches
+              </p>
             </div>
             <div className="bg-white rounded-lg shadow p-4">
               <p className="text-sm font-medium text-gray-500">Active Players</p>

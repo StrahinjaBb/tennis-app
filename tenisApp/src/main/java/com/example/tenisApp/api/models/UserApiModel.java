@@ -15,15 +15,17 @@ public class UserApiModel {
     private String username;
     private League league;
     private Integer points;
+    private Integer matches;
 
     public UserApiModel() {
 
     }
 
-    public UserApiModel(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username, League league, Integer points) {
+    public UserApiModel(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username, League league, Integer points, Integer matches) {
         this(id, userStatus, firstName, lastName, email, password, roleType, username);
         this.league = league;
         this.points = points;
+        this.matches = matches;
     }
 
     public UserApiModel(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username) {
@@ -123,5 +125,13 @@ public class UserApiModel {
 
     public void setPoints(Integer points) {
         this.points = points;
+    }
+
+    public Integer getMatches() {
+        return matches;
+    }
+
+    public void setMatches(Integer matches) {
+        this.matches = matches;
     }
 }
