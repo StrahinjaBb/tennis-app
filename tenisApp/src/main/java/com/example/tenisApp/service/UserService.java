@@ -11,6 +11,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,11 @@ public class UserService {
             models.add(UserConversionUtils.dbModelToApiModel(user));
         }
 
-        models.sort((u1, u2) -> u1.getFirstName().compareToIgnoreCase(u2.getFirstName()));
+        models.sort(Comparator.comparing(
+                UserApiModel::getPoints,
+                Comparator.nullsLast(Comparator.reverseOrder())
+        ));
+
         return models;
     }
 
