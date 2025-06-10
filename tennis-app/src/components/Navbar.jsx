@@ -42,7 +42,7 @@ const Navbar = () => {
                         : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                     }`}
                   >
-                    Appointments
+                    Termini
                   </Link>
                   <Link
                     to="/players"
@@ -52,7 +52,7 @@ const Navbar = () => {
                         : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                     }`}
                   >
-                    Players
+                    Igrači
                   </Link>
                   {userRole === 'ADMIN' && (
                     <Link
