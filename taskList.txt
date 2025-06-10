@@ -1,11 +1,6 @@
-1) Sredi login i password protection - has code etc...
-
-2) Sredi bazu da appointment-i imaju naziv - naravno i ceo API i UI - ne mora, nek se zove po user-u
-
-3) Dodaj user-ima u bazi broj bodova i ligu koju igraju - gotovo
-
-4) Dodaj stranicu za A i B ligu sa listom koristnika i njihovim bodovima - orderd gotovo
-
-5) Admin stranica za upravljanje user-ima gotovo
-
-Ako nisi moron, ovo mozes sutra da zavrsis...
+Od 7 do 12 termini
+Na srpskom
+Do dve nedelje unapred
+Dodaj polje za broj meceva
+Zakazan termin tamnije plava - kao 'Today'
+Sortiranje po poena.
