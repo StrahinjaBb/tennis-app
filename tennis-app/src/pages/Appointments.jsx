@@ -201,11 +201,11 @@ const AppointmentsPage = () => {
   };
 
   const EventComponent = ({ event }) => (
-    <div className="p-2 bg-blue-50 border border-blue-100 rounded-lg shadow-sm">
-      <div className="font-medium text-blue-800">
+    <div className="p-2 bg-blue-600 text-white rounded-lg shadow-sm">
+      <div className="font-medium">
         {event.user.firstName} {event.user.lastName}
       </div>
-      <div className="text-xs text-blue-600">
+      <div className="text-xs">
         {moment(event.start).tz("Europe/Belgrade").format('H:mm')} - {moment(event.end).tz("Europe/Belgrade").format('H:mm')}
       </div>
     </div>
@@ -251,9 +251,9 @@ const AppointmentsPage = () => {
             timeslots={2}
             eventPropGetter={(event) => ({
               style: {
-                backgroundColor: '#EFF6FF',
-                borderColor: '#BFDBFE',
-                color: '#1E40AF',
+                backgroundColor: '#2563EB',
+                borderColor: '#1D4ED8',
+                color: '#FFFFFF',
               },
             })}
           />
