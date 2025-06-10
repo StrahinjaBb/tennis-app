@@ -1,6 +1,6 @@
-Od 7 do 12 termini
-Na srpskom
-Do dve nedelje unapred
+Od 7 do 12 termini - done
+Na srpskom - mora konsultacija
+Do dve nedelje unapred - done
 Dodaj polje za broj meceva
-Zakazan termin tamnije plava - kao 'Today'
-Sortiranje po poena.
+Zakazan termin tamnije plava - kao 'Today' - done
+Sortiranje po poena. - done

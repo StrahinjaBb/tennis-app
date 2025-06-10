@@ -102,9 +102,29 @@ const AppointmentsPage = () => {
   const navigateWeek = (direction) => {
     setCurrentDate(prevDate => {
       const newDate = new Date(prevDate);
+      const today = new Date();
+      const twoWeeksLater = new Date(today);
+      twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+      const twoWeeksBefore = new Date(today);
+      twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
+
       if (direction === 'next') {
+        // Proveri da li je nova nedelja unutar dozvoljenog opsega
+        const testDate = new Date(newDate);
+        testDate.setDate(testDate.getDate() + 7);
+        if (testDate > twoWeeksLater) {
+          toast.info('Možete videti samo dve nedelje unapred');
+          return newDate;
+        }
         newDate.setDate(newDate.getDate() + 7);
       } else {
+        // Proveri da li je nova nedelja unutar dozvoljenog opsega
+        const testDate = new Date(newDate);
+        testDate.setDate(testDate.getDate() - 7);
+        if (testDate < twoWeeksBefore) {
+          toast.info('Možete videti samo dve nedelje unazad');
+          return newDate;
+        }
         newDate.setDate(newDate.getDate() - 7);
       }
       return newDate;
@@ -242,7 +262,7 @@ const AppointmentsPage = () => {
             date={currentDate}
             onNavigate={setCurrentDate}
             min={new Date(0, 0, 0, 7, 0, 0)}
-            max={new Date(0, 0, 0, 22, 0, 0)}
+            max={new Date(0, 0, 0, 23, 59, 0)}
             components={{
               event: EventComponent,
               toolbar: CustomToolbar,
