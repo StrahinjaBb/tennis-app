@@ -16,9 +16,10 @@ public class UserDTO {
     private String username;
     private League league;
     private Integer points;
+    private Integer matches;
 
 
-    public UserDTO(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username, League league, Integer points) {
+    public UserDTO(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username, League league, Integer points, Integer matches) {
         this.id = id;
         this.userStatus = userStatus;
         this.firstName = firstName;
@@ -29,6 +30,7 @@ public class UserDTO {
         this.username = username;
         this.league = league;
         this.points = points;
+        this.matches = matches;
     }
 
     public UserDTO(Long id, UserStatus userStatus, String firstName, String lastName, String email, String password, RoleType roleType, String username) {
@@ -134,5 +136,13 @@ public class UserDTO {
 
     public void setPoints(Integer points) {
         this.points = points;
+    }
+
+    public Integer getMatches() {
+        return matches;
+    }
+
+    public void setMatches(Integer matches) {
+        this.matches = matches;
     }
 }

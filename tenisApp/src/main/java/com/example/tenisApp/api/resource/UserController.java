@@ -80,6 +80,21 @@ public class UserController {
 
         Integer newPoints = user.getPoints() + request.getPoints();
         user.setPoints(newPoints);
+
+        user.increaseMatches();
+        User updatedUser = userService.saveUser(user);
+
+        return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
+    }
+
+    @PutMapping("/{id}/matches")
+    public ResponseEntity updateMatchers(@PathVariable Long id, @RequestBody UpdateUserPoints request) {
+        User user = userService.getDbUserById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        user.setMatches(request.getPoints());
         User updatedUser = userService.saveUser(user);
 
         return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
