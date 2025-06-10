@@ -75,6 +75,7 @@ public class User {
     public void increaseMatches() {
         if (this.matches == null) {
             this.matches = 1;
+            return;
         }
 
         this.matches += 1;
