@@ -15,7 +15,7 @@ const HomePage = () => {
         setUser(userData);
       } catch (error) {
         console.error("Greška pri dohvaćanju korisnika:", error);
-        navigate("/login");
+        // navigate("/login");
       } finally {
         setLoading(false);
       }
@@ -28,9 +28,9 @@ const HomePage = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold">Zdravo, {user.firstName}!</h1>
+      <h1 className="text-3xl font-bold">Zdravo {user?.firstName}!</h1>
     </div>
   );
-};
+}
 
 export default HomePage;
