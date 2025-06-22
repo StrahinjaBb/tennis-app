@@ -242,8 +242,8 @@ const AppointmentsPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Raspored termina</h1>
-          <p className="text-gray-600">Zakažite termine</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
+          <p className="text-gray-600">Book your next appointment</p>
         </div>
 
         {/* Calendar Container */}
