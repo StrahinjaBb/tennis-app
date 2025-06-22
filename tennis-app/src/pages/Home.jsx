@@ -29,7 +29,14 @@ const HomePage = () => {
   return (
       <div className="w-full bg-gray-50">
         <div className="max-w-7xl mx-auto p-6">
-          <h1 className="text-3xl font-bold">Zdravo {user?.firstName}!</h1>
+          {/* <h1 className="text-3xl font-bold">Zdravo {user?.firstName}!</h1> */}
+          <br/>
+          <p>
+            Tenis centar Krstulović! <br/>
+            Ovde možete imati pregled raspoloživosti termina kao i mogućnost rezervacije. <br/>
+            Možete videti i rang listu igrača iz različiti liga.
+          </p>
+          <br/>
         </div>
       </div>
     );
