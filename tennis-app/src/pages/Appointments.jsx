@@ -192,8 +192,8 @@ const AppointmentsPage = () => {
     };
 
     return (
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div className="flex items-center gap-2">
+      <div className="w-full bg-gray-50">
+        <div className="max-w-7xl mx-auto p-6">
           <button 
             onClick={() => navigateWeek('prev')} 
             className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
@@ -241,10 +241,10 @@ const AppointmentsPage = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
-          <p className="text-gray-600">Book your next appointment</p>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
+        <p className="text-gray-600">Book your next appointment</p>
+      </div>
 
         {/* Calendar Container */}
         <div className="bg-white rounded-xl shadow-lg p-6">
