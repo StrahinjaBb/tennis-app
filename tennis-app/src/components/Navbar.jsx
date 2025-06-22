@@ -4,7 +4,6 @@ const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const userRole = localStorage.getItem('userRole');
-    const username = localStorage.getItem('username');
     const isLoggedIn = !!userRole; // Provera da li je korisnik ulogovan
     
     const handleLogout = () => {
@@ -45,7 +44,7 @@ const Navbar = () => {
                             : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                         }`}
                       >
-                        Termini
+                        Appointments
                       </Link>
                       <Link
                         to="/players"
@@ -55,7 +54,7 @@ const Navbar = () => {
                             : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                         }`}
                       >
-                        Igrači
+                        Players
                       </Link>
                       {userRole === 'ADMIN' && (
                         <Link

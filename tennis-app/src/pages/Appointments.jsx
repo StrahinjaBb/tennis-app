@@ -68,7 +68,7 @@ const AppointmentsPage = () => {
         setUser(userData);
       } catch (error) {
         console.error("Greška pri dohvaćanju korisnika:", error);
-        navigate("/login");
+        // navigate("/login");
       } finally {
         setLoading(false);
       }
