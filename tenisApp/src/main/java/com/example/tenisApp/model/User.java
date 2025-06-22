@@ -73,7 +73,7 @@ public class User {
     }
 
     public void increaseMatches() {
-        if (this.matches == null) {
+        if (this.matches == null || this.matches == 0) {
             this.matches = 1;
             return;
         }
