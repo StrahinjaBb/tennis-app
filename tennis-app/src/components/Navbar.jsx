@@ -5,6 +5,7 @@ const Navbar = () => {
     const location = useLocation();
     const userRole = localStorage.getItem('userRole');
     const username = localStorage.getItem('username');
+    const isLoggedIn = !!userRole; // Provera da li je korisnik ulogovan
     
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -34,59 +35,77 @@ const Navbar = () => {
                   >
                     Home
                   </Link>
-                  <Link
-                    to="/appointments"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive('/appointments') 
-                        ? 'bg-blue-700 text-white' 
-                        : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-                    }`}
-                  >
-                    Termini
-                  </Link>
-                  <Link
-                    to="/players"
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive('/players') 
-                        ? 'bg-blue-700 text-white' 
-                        : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-                    }`}
-                  >
-                    Igrači
-                  </Link>
-                  {userRole === 'ADMIN' && (
-                    <Link
-                      to="/admin"
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        isActive('/admin') 
-                          ? 'bg-blue-700 text-white' 
-                          : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-                      }`}
-                    >
-                      Admin
-                    </Link>
+                  {(
+                    <>
+                      <Link
+                        to="/appointments"
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          isActive('/appointments') 
+                            ? 'bg-blue-700 text-white' 
+                            : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                        }`}
+                      >
+                        Termini
+                      </Link>
+                      <Link
+                        to="/players"
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          isActive('/players') 
+                            ? 'bg-blue-700 text-white' 
+                            : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                        }`}
+                      >
+                        Igrači
+                      </Link>
+                      {userRole === 'ADMIN' && (
+                        <Link
+                          to="/admin"
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            isActive('/admin') 
+                              ? 'bg-blue-700 text-white' 
+                              : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                          }`}
+                        >
+                          Admin
+                        </Link>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Right side - User info and logout */}
+            {/* Right side - User info and actions */}
             <div className="hidden md:block">
               <div className="flex items-center space-x-4">
-                {username && (
-                  <span className="text-blue-100 text-sm font-medium">
-                    Welcome, {username}
-                  </span>
+                {isLoggedIn ? (
+                  <>
+                    <button
+                      onClick={handleLogout}
+                      className="px-4 py-2 bg-white/20 text-white rounded-md text-sm font-medium hover:bg-white/30 transition-colors flex items-center"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                      </svg>
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/register"
+                      className="px-4 py-2 bg-white/20 text-white rounded-md text-sm font-medium hover:bg-white/30 transition-colors"
+                    >
+                      Register
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="px-4 py-2 bg-white/30 text-white rounded-md text-sm font-medium hover:bg-white/40 transition-colors"
+                    >
+                      Login
+                    </Link>
+                  </>
                 )}
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 bg-white/20 text-white rounded-md text-sm font-medium hover:bg-white/30 transition-colors flex items-center"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                  </svg>
-                  Logout
-                </button>
               </div>
             </div>
 
@@ -120,44 +139,72 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link
-              to="/appointments"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive('/appointments') 
-                  ? 'bg-blue-700 text-white' 
-                  : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-              }`}
-            >
-              Appointments
-            </Link>
-            <Link
-              to="/players"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive('/players') 
-                  ? 'bg-blue-700 text-white' 
-                  : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-              }`}
-            >
-              Players
-            </Link>
-            {userRole === 'ADMIN' && (
-              <Link
-                to="/admin"
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  isActive('/admin') 
-                    ? 'bg-blue-700 text-white' 
-                    : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-                }`}
-              >
-                Admin
-              </Link>
+            {isLoggedIn && (
+              <>
+                <Link
+                  to="/appointments"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive('/appointments') 
+                      ? 'bg-blue-700 text-white' 
+                      : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                  }`}
+                >
+                  Appointments
+                </Link>
+                <Link
+                  to="/players"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive('/players') 
+                      ? 'bg-blue-700 text-white' 
+                      : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                  }`}
+                >
+                  Players
+                </Link>
+                {userRole === 'ADMIN' && (
+                  <Link
+                    to="/admin"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${
+                      isActive('/admin') 
+                        ? 'bg-blue-700 text-white' 
+                        : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                    }`}
+                  >
+                    Admin
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-100 hover:bg-blue-700 hover:text-white"
+                >
+                  Logout
+                </button>
+              </>
             )}
-            <button
-              onClick={handleLogout}
-              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-100 hover:bg-blue-700 hover:text-white"
-            >
-              Logout
-            </button>
+            {!isLoggedIn && (
+              <>
+                <Link
+                  to="/register"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive('/register') 
+                      ? 'bg-blue-700 text-white' 
+                      : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                  }`}
+                >
+                  Register
+                </Link>
+                <Link
+                  to="/login"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive('/login') 
+                      ? 'bg-blue-700 text-white' 
+                      : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                  }`}
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
