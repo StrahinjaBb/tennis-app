@@ -74,7 +74,9 @@ public class UserController {
 
         if (user.getPoints() == null) {
             user.setPoints(request.getPoints());
-            user.increaseMatches();
+            if (request.getPoints() > 0) {
+                user.increaseMatches();
+            }
             User updatedUser = userService.saveUser(user);
             return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));
         }
@@ -82,7 +84,9 @@ public class UserController {
         Integer newPoints = user.getPoints() + request.getPoints();
         user.setPoints(newPoints);
 
-        user.increaseMatches();
+        if (request.getPoints() > 0) {
+            user.increaseMatches();
+        }
         User updatedUser = userService.saveUser(user);
 
         return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(updatedUser));

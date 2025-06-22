@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import { useEffect, useState } from "react";
 import { getUserById } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +16,6 @@ const HomePage = () => {
         setUser(userData);
       } catch (error) {
         console.error("Greška pri dohvaćanju korisnika:", error);
-        // navigate("/login");
       } finally {
         setLoading(false);
       }
@@ -27,10 +27,19 @@ const HomePage = () => {
   if (loading) return <div className="p-4">Učitavanje...</div>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold">Zdravo {user?.firstName}!</h1>
-    </div>
-  );
+      <div className="w-full bg-gray-50">
+        <div className="max-w-7xl mx-auto p-6">
+          {/* <h1 className="text-3xl font-bold">Zdravo {user?.firstName}!</h1> */}
+          <br/>
+          <p>
+            Tenis centar Krstulović! <br/>
+            Ovde možete imati pregled raspoloživosti termina kao i mogućnost rezervacije. <br/>
+            Možete videti i rang listu igrača iz različiti liga.
+          </p>
+          <br/>
+        </div>
+      </div>
+    );
 }
 
 export default HomePage;
