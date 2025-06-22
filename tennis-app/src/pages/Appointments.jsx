@@ -198,19 +198,19 @@ const AppointmentsPage = () => {
             onClick={() => navigateWeek('prev')} 
             className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
-            &lt; Prethodno
+            &lt; Previous
           </button>
           <button 
             onClick={goToToday} 
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
           >
-            Danas
+            Today
           </button>
           <button 
             onClick={() => navigateWeek('next')} 
             className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
-            Dalje &gt;
+            Next &gt;
           </button>
         </div>
         <h2 className="text-xl font-bold text-gray-800">
