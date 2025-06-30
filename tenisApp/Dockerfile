@@ -1,29 +1,28 @@
-# 1. Bazna Java slika
-FROM eclipse-temurin:17-jdk-jammy
+# Koristimo OpenJDK 21 LTS
+FROM eclipse-temurin:21-jdk-jammy
 
-# 2. Radni direktorijum
 WORKDIR /app
 
-# 3. Kopiranje Maven wrappera i POM fajla (koristi cache za dependencies)
+# Kopiramo Maven wrapper i POM fajl
 COPY .mvn/ .mvn
 COPY mvnw .
 COPY pom.xml .
 
-# 4. Preuzimanje dependencies (koristi cache ako se pom.xml nije menjao)
+# Instaliramo zavisnosti (koristi cache)
 RUN ./mvnw dependency:go-offline
 
-# 5. Kopiranje izvornog koda
+# Kopiramo izvorni kod
 COPY src ./src
 
-# 6. Build aplikacije
+# Build aplikacije
 RUN ./mvnw clean package -DskipTests
 
-# 7. Health check (opciono)
+# Health check za Render
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/actuator/health || exit 1
 
-# 8. Port izlozen za Render
+# Port za Render
 EXPOSE 8080
 
-# 9. Start komanda
+# Start komanda
 CMD ["java", "-jar", "target/tenisApp-0.0.1-SNAPSHOT.jar", "--spring.profiles.active=prod"]

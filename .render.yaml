@@ -1,8 +1,7 @@
 services:
   - type: web
     name: tennis-backend
-    dockerfilePath: tenisApp/Dockerfile  # Relativna putanja od roota
-    env: java
+    dockerfilePath: tenisApp/Dockerfile
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
