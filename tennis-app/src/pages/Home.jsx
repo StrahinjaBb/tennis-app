@@ -32,9 +32,13 @@ const HomePage = () => {
           {/* <h1 className="text-3xl font-bold">Zdravo {user?.firstName}!</h1> */}
           <br/>
           <p>
-            Tenis centar Krstulović! <br/>
-            Ovde možete imati pregled raspoloživosti termina kao i mogućnost rezervacije. <br/>
-            Možete videti i rang listu igrača iz različiti liga.
+            🎾Dobrodošli na stranicu našeg teniskog kluba!
+
+            🎾Ovde možete lako proveriti slobodne termine i rezervisati teren — sve na jednom mestu.
+
+            🎾Tabela lige je uvek ažurna, a za zakazivanje termina potreban je verifikovan nalog. Bez naloga možete pregledati dostupnost i pozvati nas na 063/286-950
+
+            Nalog možete napraviti brzo i jednostavno – klikom na link za registraciju.
           </p>
           <br/>
         </div>

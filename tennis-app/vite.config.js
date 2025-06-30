@@ -10,5 +10,10 @@ export default defineConfig({
         changeOrigin: true
       }
     }
-  }
+  },
+  plugins: [
+    react({
+      jsxRuntime: 'automatic'  // OBAVEZNO za React 18+
+    })
+  ]
 })
