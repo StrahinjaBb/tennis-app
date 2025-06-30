@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: tennis-backend
+    env: java
+    buildCommand: cd tenisApp && chmod +x ./mvnw && ./mvnw clean package -DskipTests
+    startCommand: cd tenisApp && java -jar target/tenisApp-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
