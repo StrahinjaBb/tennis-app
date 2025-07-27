@@ -22,7 +22,7 @@ const customStyles = {
     maxWidth: '90%',
     borderRadius: '12px',
     border: 'none',
-    boxShadow: '0 10px25px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
     padding: '24px',
     background: 'white',
   },
@@ -43,6 +43,7 @@ const AppointmentsPage = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [currentDate, setCurrentDate] = useState(moment());
   const [timeInput, setTimeInput] = useState('');
+  const [duration, setDuration] = useState(60); // Default to 1 hour
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
 
@@ -79,6 +80,20 @@ const AppointmentsPage = () => {
       return time.isSameOrAfter(appStart) && time.isBefore(appEnd);
     });
   }, [appointments]);
+
+  // Check if the selected duration is available
+  const isDurationAvailable = useCallback((startTime, durationMinutes) => {
+    const endTime = moment(startTime).add(durationMinutes, 'minutes');
+    let currentTime = moment(startTime);
+    
+    while (currentTime.isBefore(endTime)) {
+      if (isSlotBooked(currentTime)) {
+        return false;
+      }
+      currentTime.add(30, 'minutes');
+    }
+    return true;
+  }, [isSlotBooked]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -152,6 +167,7 @@ const AppointmentsPage = () => {
       endTime: moment(time).add(1, 'hour')
     });
     setTimeInput(time.format('HH:mm'));
+    setDuration(60); // Reset to default 1 hour
     setSelectedEvent(null);
     setModalIsOpen(true);
   };
@@ -168,7 +184,6 @@ const AppointmentsPage = () => {
     
     if (/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {
       const [hours, minutes] = value.split(':');
-      // Only allow 00 or 30 minutes
       const roundedMinutes = Math.round(minutes / 30) * 30;
       const newTime = moment(selectedSlot.startTime)
         .hour(hours)
@@ -177,16 +192,24 @@ const AppointmentsPage = () => {
       
       setSelectedSlot({
         startTime: newTime,
-        endTime: moment(newTime).add(1, 'hour')
+        endTime: moment(newTime).add(duration, 'minutes')
       });
       setTimeInput(newTime.format('HH:mm'));
     }
   };
 
+  const handleDurationChange = (minutes) => {
+    setDuration(minutes);
+    setSelectedSlot(prev => ({
+      startTime: moment(prev.startTime),
+      endTime: moment(prev.startTime).add(minutes, 'minutes')
+    }));
+  };
+
   const onCreateAppointment = async () => {
     try {
-      if (isSlotBooked(selectedSlot.startTime)) {
-        toast.error('This time slot is no longer available');
+      if (!isDurationAvailable(selectedSlot.startTime, duration)) {
+        toast.error('This time slot is no longer available for the selected duration');
         return;
       }
 
@@ -368,6 +391,26 @@ const AppointmentsPage = () => {
                 <label className="block text-sm font-medium text-blue-800 mb-1">Date</label>
                 <div className="text-gray-700">
                   {selectedSlot.startTime.format('MMMM D, YYYY')}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-blue-800 mb-2">Duration</label>
+                <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDurationChange(60)}
+                    className={`px-4 py-2 rounded-md ${duration === 60 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                  >
+                    1 hour
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDurationChange(90)}
+                    className={`px-4 py-2 rounded-md ${duration === 90 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                  >
+                    1.5 hours
+                  </button>
                 </div>
               </div>
               
