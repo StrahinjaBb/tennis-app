@@ -22,7 +22,7 @@ const customStyles = {
     maxWidth: '90%',
     borderRadius: '12px',
     border: 'none',
-    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 10px25px rgba(0, 0, 0, 0.1)',
     padding: '24px',
     background: 'white',
   },
@@ -71,16 +71,12 @@ const AppointmentsPage = () => {
     return slots;
   };
 
-  const isSlotAvailable = useCallback((time) => {
-    const endTime = moment(time).add(1, 'hour');
-    return !appointments.some(app => {
+  // Check if a time slot is within any booked appointment
+  const isSlotBooked = useCallback((time) => {
+    return appointments.some(app => {
       const appStart = moment(app.startTime);
       const appEnd = moment(app.endTime);
-      return (
-        (time.isSameOrAfter(appStart) && time.isBefore(appEnd)) ||
-        (endTime.isAfter(appStart) && endTime.isSameOrBefore(appEnd)) ||
-        (time.isBefore(appStart) && endTime.isAfter(appEnd))
-      );
+      return time.isSameOrAfter(appStart) && time.isBefore(appEnd);
     });
   }, [appointments]);
 
@@ -146,7 +142,7 @@ const AppointmentsPage = () => {
       return;
     }
 
-    if (!isSlotAvailable(time)) {
+    if (isSlotBooked(time)) {
       toast.error('This time slot is already booked');
       return;
     }
@@ -172,21 +168,24 @@ const AppointmentsPage = () => {
     
     if (/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {
       const [hours, minutes] = value.split(':');
+      // Only allow 00 or 30 minutes
+      const roundedMinutes = Math.round(minutes / 30) * 30;
       const newTime = moment(selectedSlot.startTime)
         .hour(hours)
-        .minute(minutes)
+        .minute(roundedMinutes)
         .second(0);
       
       setSelectedSlot({
         startTime: newTime,
         endTime: moment(newTime).add(1, 'hour')
       });
+      setTimeInput(newTime.format('HH:mm'));
     }
   };
 
   const onCreateAppointment = async () => {
     try {
-      if (!isSlotAvailable(selectedSlot.startTime)) {
+      if (isSlotBooked(selectedSlot.startTime)) {
         toast.error('This time slot is no longer available');
         return;
       }
@@ -276,19 +275,22 @@ const AppointmentsPage = () => {
                       .minute(timeSlot.minute());
                     
                     const appointment = appointments.find(app => 
-                      moment(app.startTime).isSame(slotTime, 'minute')
+                      moment(app.startTime).isSameOrBefore(slotTime) && 
+                      moment(app.endTime).isAfter(slotTime)
                     );
+
+                    const isBooked = isSlotBooked(slotTime);
 
                     return (
                       <div
                         key={slotTime.format('HH:mm')}
                         className={`p-3 mb-2 rounded-lg cursor-pointer ${
-                          appointment 
+                          isBooked 
                             ? 'bg-blue-600 text-white'
                             : 'bg-gray-100 hover:bg-gray-200'
                         }`}
                         onClick={() => 
-                          appointment 
+                          isBooked 
                             ? handleEventClick(appointment) 
                             : handleSlotClick(slotTime)
                         }
@@ -297,7 +299,7 @@ const AppointmentsPage = () => {
                           <span className="font-medium">
                             {slotTime.format('HH:mm')}
                           </span>
-                          {appointment && (
+                          {isBooked && (
                             <span>
                               {appointment.user.firstName} {appointment.user.lastName}
                             </span>
@@ -367,20 +369,6 @@ const AppointmentsPage = () => {
                 <div className="text-gray-700">
                   {selectedSlot.startTime.format('MMMM D, YYYY')}
                 </div>
-              </div>
-              
-              <div className="mb-4">
-                <label htmlFor="timeInput" className="block text-sm font-medium text-blue-800 mb-1">
-                  Start Time (HH:mm)
-                </label>
-                <input
-                  id="timeInput"
-                  type="time"
-                  step="1800"
-                  value={timeInput}
-                  onChange={handleTimeChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
               </div>
               
               <div>
