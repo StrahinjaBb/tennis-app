@@ -58,17 +58,19 @@ const AppointmentsPage = () => {
     return days;
   };
 
-  // Generate time slots for the day (8AM to 10PM)
+  // Generate time slots for the day (8AM to 11PM)
   const generateTimeSlots = () => {
     const slots = [];
-    const startTime = moment().startOf('day').hour(8);
-    const endTime = moment().startOf('day').hour(22);
+    const startTime = moment().startOf('day').hour(8); // 8 AM
+    const endTime = moment().startOf('day').hour(23); // 11 PM
     
     let time = moment(startTime);
     while (time.isBefore(endTime)) {
       slots.push(moment(time));
       time.add(1, 'hour');
     }
+    // Dodajemo poslednji termin 23:00-24:00
+    slots.push(moment(endTime));
     return slots;
   };
 
@@ -322,14 +324,14 @@ const AppointmentsPage = () => {
                 onClick={onDeleteAppointment}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
               >
-                Otkaži termin
+                Cancel appointment
               </button>
             )}
             <button
               onClick={() => setModalIsOpen(false)}
               className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
-              Zatvori
+              Close
             </button>
           </div>
         </Modal>
@@ -365,13 +367,13 @@ const AppointmentsPage = () => {
                 onClick={() => setModalIsOpen(false)}
                 className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
               >
-                Otkaži
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
-                Potvrdi rezervaciju
+                Book appointment
               </button>
             </div>
           </form>
