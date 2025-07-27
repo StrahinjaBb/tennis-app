@@ -367,13 +367,13 @@ const AppointmentsPage = () => {
                 onClick={() => setModalIsOpen(false)}
                 className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
               >
-                Otkaži
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
-                Potvrdi rezervaciju
+                Book appointment
               </button>
             </div>
           </form>
