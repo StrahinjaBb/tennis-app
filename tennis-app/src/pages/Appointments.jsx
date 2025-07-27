@@ -324,14 +324,14 @@ const AppointmentsPage = () => {
                 onClick={onDeleteAppointment}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
               >
-                Otkaži termin
+                Cancel appointment
               </button>
             )}
             <button
               onClick={() => setModalIsOpen(false)}
               className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
-              Zatvori
+              Close
             </button>
           </div>
         </Modal>
