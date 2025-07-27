@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment-timezone';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { getAppointments, createAppointment, deleteAppointment } from '../api/appointmentApi';
 import { useForm } from 'react-hook-form';
 import Modal from 'react-modal';
@@ -9,9 +7,10 @@ import { getUserById } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'moment/locale/sr';
 
 moment.tz.setDefault("Europe/Belgrade");
-const localizer = momentLocalizer(moment);
+moment.locale('sr');
 
 const customStyles = {
   content: {
@@ -39,26 +38,46 @@ Modal.setAppElement('#root');
 
 const AppointmentsPage = () => {
   const [user, setUser] = useState(null);
-  const [events, setEvents] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(moment());
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
 
-  const isSlotAvailable = useCallback((start, end) => {
-    return !events.some(event => {
-      const eventStart = new Date(event.start);
-      const eventEnd = new Date(event.end);
-      return (
-        (start >= eventStart && start < eventEnd) ||
-        (end > eventStart && end <= eventEnd) ||
-        (start <= eventStart && end >= eventEnd)
-      );
+  // Generate days to display (3 days)
+  const generateDays = () => {
+    const days = [];
+    const startDate = moment(currentDate).startOf('day');
+    
+    for (let i = 0; i < 3; i++) {
+      days.push(moment(startDate).add(i, 'days'));
+    }
+    return days;
+  };
+
+  // Generate time slots for the day (8AM to 10PM)
+  const generateTimeSlots = () => {
+    const slots = [];
+    const startTime = moment().startOf('day').hour(8);
+    const endTime = moment().startOf('day').hour(22);
+    
+    let time = moment(startTime);
+    while (time.isBefore(endTime)) {
+      slots.push(moment(time));
+      time.add(1, 'hour');
+    }
+    return slots;
+  };
+
+  const isSlotAvailable = useCallback((time) => {
+    return !appointments.some(app => {
+      const appStart = moment(app.startTime);
+      return appStart.isSame(time, 'hour');
     });
-  }, [events]);
+  }, [appointments]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -80,16 +99,9 @@ const AppointmentsPage = () => {
   const fetchAppointments = useCallback(async () => {
     try {
       const response = await getAppointments();
-      const formattedEvents = response.map(appointment => ({
-        id: appointment.id,
-        title: `${appointment.user.firstName} ${appointment.user.lastName}`,
-        start: new Date(appointment.startTime),
-        end: new Date(appointment.endTime),
-        user: appointment.user,
-      }));
-      setEvents(formattedEvents);
+      setAppointments(response);
     } catch (err) {
-      toast.error('Failed to fetch appointments');
+      toast.error('Greška pri učitavanju termina');
     } finally {
       setLoading(false);
     }
@@ -99,68 +111,68 @@ const AppointmentsPage = () => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  const navigateWeek = (direction) => {
+  const navigateDays = (direction) => {
     setCurrentDate(prevDate => {
-      const newDate = new Date(prevDate);
-      const today = new Date();
-      const twoWeeksLater = new Date(today);
-      twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
-      const twoWeeksBefore = new Date(today);
-      twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
+      const newDate = moment(prevDate);
+      const today = moment();
+      const twoWeeksLater = moment().add(14, 'days');
+      const twoWeeksBefore = moment().subtract(14, 'days');
 
       if (direction === 'next') {
-        // Proveri da li je nova nedelja unutar dozvoljenog opsega
-        const testDate = new Date(newDate);
-        testDate.setDate(testDate.getDate() + 7);
-        if (testDate > twoWeeksLater) {
+        // Proveri da li je unutar dozvoljenog opsega
+        const testDate = moment(newDate).add(3, 'days');
+        if (testDate.isAfter(twoWeeksLater)) {
           toast.info('Možete videti samo dve nedelje unapred');
           return newDate;
         }
-        newDate.setDate(newDate.getDate() + 7);
+        newDate.add(3, 'days');
       } else {
-        // Proveri da li je nova nedelja unutar dozvoljenog opsega
-        const testDate = new Date(newDate);
-        testDate.setDate(testDate.getDate() - 7);
-        if (testDate < twoWeeksBefore) {
+        // Proveri da li je unutar dozvoljenog opsega
+        const testDate = moment(newDate).subtract(3, 'days');
+        if (testDate.isBefore(twoWeeksBefore)) {
           toast.info('Možete videti samo dve nedelje unazad');
           return newDate;
         }
-        newDate.setDate(newDate.getDate() - 7);
+        newDate.subtract(3, 'days');
       }
       return newDate;
     });
   };
 
-  const handleSlotClick = useCallback((slotInfo) => {
+  const handleSlotClick = (time) => {
     if (user?.roleType !== 'USER' && user?.roleType !== 'ADMIN') {
       return;
     }
 
-    if (!isSlotAvailable(slotInfo.start, slotInfo.end)) {
-      toast.error('This time slot is already booked');
+    if (!isSlotAvailable(time)) {
+      toast.error('Ovaj termin je već rezervisan');
       return;
     }
-    setSelectedSlot(slotInfo);
+    
+    setSelectedSlot({
+      startTime: moment(time),
+      endTime: moment(time).add(1, 'hour')
+    });
     setSelectedEvent(null);
     setModalIsOpen(true);
-  }, [isSlotAvailable, user]);
+  };
 
-  const handleEventClick = useCallback((event) => {
-    setSelectedEvent(event);
+  const handleEventClick = (appointment) => {
+    setSelectedEvent(appointment);
     setSelectedSlot(null);
     setModalIsOpen(true);
-  }, []);
+  };
 
   const onCreateAppointment = async () => {
     try {
-      if (!isSlotAvailable(selectedSlot.start, selectedSlot.end)) {
-        toast.error('This time slot is no longer available');
+      if (!isSlotAvailable(selectedSlot.startTime)) {
+        toast.error('Ovaj termin je više dostupan');
         return;
       }
 
       const appointmentData = {
-        startTime: moment(selectedSlot.start).tz("Europe/Belgrade").format('YYYY-MM-DDTHH:mm:ss'),
-        endTime: moment(selectedSlot.end).tz("Europe/Belgrade").format('YYYY-MM-DDTHH:mm:ss'),
+        startTime: selectedSlot.startTime.format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: selectedSlot.endTime.format('YYYY-MM-DDTHH:mm:ss'),
         user: user
       };
 
@@ -168,68 +180,26 @@ const AppointmentsPage = () => {
       await fetchAppointments();
       setModalIsOpen(false);
       reset();
-      toast.success('Appointment booked successfully!');
+      toast.success('Termin uspešno rezervisan!');
     } catch (err) {
-      toast.error('Failed to create appointment');
+      toast.error('Greška pri rezervaciji termina');
     }
   };
 
   const onDeleteAppointment = async () => {
     try {
       await deleteAppointment(selectedEvent.id);
-      setEvents(events.filter(e => e.id !== selectedEvent.id));
+      setAppointments(appointments.filter(a => a.id !== selectedEvent.id));
       setModalIsOpen(false);
-      toast.success('Appointment cancelled successfully');
+      toast.success('Termin uspešno otkazan');
     } catch (err) {
-      toast.error('Failed to cancel appointment');
+      toast.error('Greška pri otkazivanju termina');
     }
   };
 
-  const CustomToolbar = (toolbar) => {
-    const goToToday = () => {
-      toolbar.onNavigate('TODAY');
-      setCurrentDate(new Date());
-    };
-
-    return (
-      <div className="w-full bg-gray-50">
-        <div className="max-w-7xl mx-auto p-6">
-          <button 
-            onClick={() => navigateWeek('prev')} 
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
-          >
-            &lt; Previous
-          </button>
-          <button 
-            onClick={goToToday} 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-          >
-            Today
-          </button>
-          <button 
-            onClick={() => navigateWeek('next')} 
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
-          >
-            Next &gt;
-          </button>
-        </div>
-        <h2 className="text-xl font-bold text-gray-800">
-          {moment(toolbar.date).tz("Europe/Belgrade").format('MMMM YYYY')}
-        </h2>
-      </div>
-    );
+  const goToToday = () => {
+    setCurrentDate(moment());
   };
-
-  const EventComponent = ({ event }) => (
-    <div className="p-2 bg-blue-600 text-white rounded-lg shadow-sm">
-      <div className="font-medium">
-        {event.user.firstName} {event.user.lastName}
-      </div>
-      <div className="text-xs">
-        {moment(event.start).tz("Europe/Belgrade").format('H:mm')} - {moment(event.end).tz("Europe/Belgrade").format('H:mm')}
-      </div>
-    </div>
-  );
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -241,42 +211,87 @@ const AppointmentsPage = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
-        <p className="text-gray-600">Book your next appointment</p>
-      </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
+          <p className="text-gray-600">Reserve your appointments</p>
+        </div>
 
-        {/* Calendar Container */}
+        {/* Controls */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex space-x-2">
+            <button 
+              onClick={() => navigateDays('prev')} 
+              className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              &lt; Previous
+            </button>
+            <button 
+              onClick={goToToday} 
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+            >
+              Today
+            </button>
+            <button 
+              onClick={() => navigateDays('next')} 
+              className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              Next &gt;
+            </button>
+          </div>
+          <h2 className="text-xl font-bold text-gray-800">
+            {currentDate.format('MMMM YYYY')}
+          </h2>
+        </div>
+
+        {/* Scheduler */}
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: '70vh' }}
-            selectable
-            onSelectSlot={handleSlotClick}
-            onSelectEvent={handleEventClick}
-            defaultView={Views.WEEK}
-            view={Views.WEEK}
-            date={currentDate}
-            onNavigate={setCurrentDate}
-            min={new Date(0, 0, 0, 7, 0, 0)}
-            max={new Date(0, 0, 0, 23, 59, 0)}
-            components={{
-              event: EventComponent,
-              toolbar: CustomToolbar,
-            }}
-            step={30}
-            timeslots={2}
-            eventPropGetter={(event) => ({
-              style: {
-                backgroundColor: '#2563EB',
-                borderColor: '#1D4ED8',
-                color: '#FFFFFF',
-              },
-            })}
-          />
+          <div className="grid grid-cols-3 gap-4">
+            {generateDays().map(day => (
+              <div key={day.format('YYYY-MM-DD')} className="border rounded-lg">
+                <div className="bg-gray-50 p-3 border-b text-center font-medium">
+                  {day.format('dddd, D. MMMM')}
+                </div>
+                <div className="p-2">
+                  {generateTimeSlots().map(timeSlot => {
+                    const slotTime = moment(day)
+                      .hour(timeSlot.hour())
+                      .minute(timeSlot.minute());
+                    
+                    const appointment = appointments.find(app => 
+                      moment(app.startTime).isSame(slotTime, 'hour')
+                    );
+
+                    return (
+                      <div
+                        key={slotTime.format('HH:mm')}
+                        className={`p-3 mb-2 rounded-lg cursor-pointer ${
+                          appointment 
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 hover:bg-gray-200'
+                        }`}
+                        onClick={() => 
+                          appointment 
+                            ? handleEventClick(appointment) 
+                            : handleSlotClick(slotTime)
+                        }
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">
+                            {slotTime.format('HH:mm')}
+                          </span>
+                          {appointment && (
+                            <span>
+                              {appointment.user.firstName} {appointment.user.lastName}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -286,17 +301,17 @@ const AppointmentsPage = () => {
           isOpen={modalIsOpen}
           onRequestClose={() => setModalIsOpen(false)}
           style={customStyles}
-          contentLabel="Appointment Details"
+          contentLabel="Detalji termina"
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Appointment Details</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Detalji termina</h2>
           <div className="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
             <div className="font-medium text-blue-800 mb-2">
-              With: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
+              Sa: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
             </div>
             <div className="text-gray-700">
-              <div>{moment(selectedEvent.start).tz("Europe/Belgrade").format('MMMM Do YYYY')}</div>
+              <div>{moment(selectedEvent.startTime).format('D. MMMM YYYY')}</div>
               <div>
-                {moment(selectedEvent.start).tz("Europe/Belgrade").format('H:mm')} - {moment(selectedEvent.end).tz("Europe/Belgrade").format('H:mm')}
+                {moment(selectedEvent.startTime).format('HH:mm')} - {moment(selectedEvent.endTime).format('HH:mm')}
               </div>
             </div>
           </div>
@@ -307,14 +322,14 @@ const AppointmentsPage = () => {
                 onClick={onDeleteAppointment}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
               >
-                Cancel Booking
+                Otkaži termin
               </button>
             )}
             <button
               onClick={() => setModalIsOpen(false)}
               className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
-              Close
+              Zatvori
             </button>
           </div>
         </Modal>
@@ -326,18 +341,18 @@ const AppointmentsPage = () => {
           isOpen={modalIsOpen}
           onRequestClose={() => setModalIsOpen(false)}
           style={customStyles}
-          contentLabel="Create Appointment"
+          contentLabel="Rezervacija termina"
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Court Time</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Rezervacija terena</h2>
           <form onSubmit={handleSubmit(onCreateAppointment)}>
             <div className="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
-              <label className="block text-sm font-medium text-blue-800 mb-1">Date & Time</label>
+              <label className="block text-sm font-medium text-blue-800 mb-1">Datum i vreme</label>
               <div className="text-gray-700">
                 {selectedSlot && (
                   <>
-                    <div>{moment(selectedSlot.start).tz("Europe/Belgrade").format('MMMM Do YYYY')}</div>
+                    <div>{selectedSlot.startTime.format('D. MMMM YYYY')}</div>
                     <div>
-                      {moment(selectedSlot.start).tz("Europe/Belgrade").format('H:mm')} - {moment(selectedSlot.end).tz("Europe/Belgrade").format('H:mm')}
+                      {selectedSlot.startTime.format('HH:mm')} - {selectedSlot.endTime.format('HH:mm')}
                     </div>
                   </>
                 )}
@@ -350,13 +365,13 @@ const AppointmentsPage = () => {
                 onClick={() => setModalIsOpen(false)}
                 className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
               >
-                Cancel
+                Otkaži
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
-                Confirm Booking
+                Potvrdi rezervaciju
               </button>
             </div>
           </form>
