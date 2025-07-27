@@ -214,8 +214,8 @@ const AppointmentsPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Kalendar termina</h1>
-          <p className="text-gray-600">Rezervišite svoj teniski termin</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
+          <p className="text-gray-600">Reserve your appointmens</p>
         </div>
 
         {/* Controls */}
@@ -225,19 +225,19 @@ const AppointmentsPage = () => {
               onClick={() => navigateDays('prev')} 
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
-              &lt; Prethodni
+              &lt; Previous
             </button>
             <button 
               onClick={goToToday} 
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
             >
-              Danas
+              Today
             </button>
             <button 
               onClick={() => navigateDays('next')} 
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
-              Sledeći &gt;
+              Next &gt;
             </button>
           </div>
           <h2 className="text-xl font-bold text-gray-800">
