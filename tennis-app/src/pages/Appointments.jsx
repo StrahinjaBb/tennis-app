@@ -58,17 +58,19 @@ const AppointmentsPage = () => {
     return days;
   };
 
-  // Generate time slots for the day (8AM to 10PM)
+  // Generate time slots for the day (8AM to 11PM)
   const generateTimeSlots = () => {
     const slots = [];
-    const startTime = moment().startOf('day').hour(8);
-    const endTime = moment().startOf('day').hour(22);
+    const startTime = moment().startOf('day').hour(8); // 8 AM
+    const endTime = moment().startOf('day').hour(23); // 11 PM
     
     let time = moment(startTime);
     while (time.isBefore(endTime)) {
       slots.push(moment(time));
       time.add(1, 'hour');
     }
+    // Dodajemo poslednji termin 23:00-24:00
+    slots.push(moment(endTime));
     return slots;
   };
 
@@ -212,8 +214,8 @@ const AppointmentsPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
-          <p className="text-gray-600">Reserve your appointments</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Kalendar termina</h1>
+          <p className="text-gray-600">Rezervišite svoj teniski termin</p>
         </div>
 
         {/* Controls */}
@@ -223,19 +225,19 @@ const AppointmentsPage = () => {
               onClick={() => navigateDays('prev')} 
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
-              &lt; Previous
+              &lt; Prethodni
             </button>
             <button 
               onClick={goToToday} 
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
             >
-              Today
+              Danas
             </button>
             <button 
               onClick={() => navigateDays('next')} 
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
-              Next &gt;
+              Sledeći &gt;
             </button>
           </div>
           <h2 className="text-xl font-bold text-gray-800">
