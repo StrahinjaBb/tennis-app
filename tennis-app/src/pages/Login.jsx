@@ -18,7 +18,7 @@ const LoginPage = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.id);
       localStorage.setItem("userRole", data.roleType);
-      setTimeout(() => navigate('/home'), 1000);
+      setTimeout(() => navigate('/appointments'), 1000);
     } catch (err) {
       setError(err);
     } finally {
