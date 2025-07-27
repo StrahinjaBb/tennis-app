@@ -15,5 +15,8 @@ export default defineConfig({
     react({
       jsxRuntime: 'automatic'  // OBAVEZNO za React 18+
     })
-  ]
+  ],
+  define: {
+    global: 'window', // Add this line
+  },
 })

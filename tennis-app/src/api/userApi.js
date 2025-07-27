@@ -1,15 +1,15 @@
 import axios from "axios";
 import { USERS_API_URL } from './config';
 
-// const API_BASE_URL = "http://localhost:8080/users";
+const API_BASE_URL = "http://localhost:8080/users";
 
 export const getUsers = async () => {
-    const response = await axios.get(USERS_API_URL);
+    const response = await axios.get(API_BASE_URL);
     return response.data;
 };
 
 export const getUserById = async (userId) => {
-  const response = await axios.get(`${USERS_API_URL}/${userId}`);
+  const response = await axios.get(`${API_BASE_URL}/${userId}`);
   return response.data;
 };
 
@@ -24,7 +24,7 @@ export const register = async (userRegister) => {
         userStatus: 'ACTIVE'
       };
   
-      const response = await axios.post(`${USERS_API_URL}`, { userApiModel }, {
+      const response = await axios.post(`${API_BASE_URL}`, { userApiModel }, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -37,7 +37,7 @@ export const register = async (userRegister) => {
 
 export const updateUserRole = async (userId, role) => {
   try {
-    const response = await axios.put(`${USERS_API_URL}/${userId}/role`, { roleType: role }, {
+    const response = await axios.put(`${API_BASE_URL}/${userId}/role`, { roleType: role }, {
       headers: {
         "Content-Type": "application/json",
       }
@@ -50,7 +50,7 @@ export const updateUserRole = async (userId, role) => {
 
 export const updateUserPoints = async (userId, points) => {
   try {
-    const response = await axios.put(`${USERS_API_URL}/${userId}/points`, { points: parseInt(points) }, {
+    const response = await axios.put(`${API_BASE_URL}/${userId}/points`, { points: parseInt(points) }, {
       headers: {
         "Content-Type": "application/json",
       }
@@ -63,7 +63,7 @@ export const updateUserPoints = async (userId, points) => {
 
 export const updateUserLeague = async (userId, league) => {
   try {
-    const response = await axios.put(`${USERS_API_URL}/${userId}/league`, { league }, {
+    const response = await axios.put(`${API_BASE_URL}/${userId}/league`, { league }, {
       headers: {
         "Content-Type": "application/json",
       }
@@ -76,7 +76,7 @@ export const updateUserLeague = async (userId, league) => {
 
 export const getLeaguePlayers = async (league) => {
    try {
-    const response = await axios.post(`${USERS_API_URL}/league`, { league: league }, {
+    const response = await axios.post(`${API_BASE_URL}/league`, { league: league }, {
       headers: {
         "Content-Type": "application/json",
       }
@@ -88,5 +88,5 @@ export const getLeaguePlayers = async (league) => {
 }
 
 export const deleteUser = async (id) => {
-    await axios.delete(`${USERS_API_URL}/${id}`);
+    await axios.delete(`${API_BASE_URL}/${id}`);
 };
