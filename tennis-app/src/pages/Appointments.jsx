@@ -7,10 +7,8 @@ import { getUserById } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'moment/locale/sr';
 
 moment.tz.setDefault("Europe/Belgrade");
-moment.locale('sr');
 
 const customStyles = {
   content: {
@@ -24,7 +22,7 @@ const customStyles = {
     maxWidth: '90%',
     borderRadius: '12px',
     border: 'none',
-    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 10px25px rgba(0, 0, 0, 0.1)',
     padding: '24px',
     background: 'white',
   },
@@ -44,6 +42,7 @@ const AppointmentsPage = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [currentDate, setCurrentDate] = useState(moment());
+  const [timeInput, setTimeInput] = useState('');
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
 
@@ -58,26 +57,26 @@ const AppointmentsPage = () => {
     return days;
   };
 
-  // Generate time slots for the day (8AM to 11PM)
+  // Generate time slots for the day (8AM to 11PM with 30-minute intervals)
   const generateTimeSlots = () => {
     const slots = [];
     const startTime = moment().startOf('day').hour(8); // 8 AM
     const endTime = moment().startOf('day').hour(23); // 11 PM
     
     let time = moment(startTime);
-    while (time.isBefore(endTime)) {
+    while (time.isSameOrBefore(endTime)) {
       slots.push(moment(time));
-      time.add(1, 'hour');
+      time.add(30, 'minutes');
     }
-    // Dodajemo poslednji termin 23:00-24:00
-    slots.push(moment(endTime));
     return slots;
   };
 
-  const isSlotAvailable = useCallback((time) => {
-    return !appointments.some(app => {
+  // Check if a time slot is within any booked appointment
+  const isSlotBooked = useCallback((time) => {
+    return appointments.some(app => {
       const appStart = moment(app.startTime);
-      return appStart.isSame(time, 'hour');
+      const appEnd = moment(app.endTime);
+      return time.isSameOrAfter(appStart) && time.isBefore(appEnd);
     });
   }, [appointments]);
 
@@ -88,8 +87,7 @@ const AppointmentsPage = () => {
         const userData = await getUserById(userId);
         setUser(userData);
       } catch (error) {
-        console.error("Greška pri dohvaćanju korisnika:", error);
-        // navigate("/login");
+        console.error("Error fetching user:", error);
       } finally {
         setLoading(false);
       }
@@ -103,7 +101,7 @@ const AppointmentsPage = () => {
       const response = await getAppointments();
       setAppointments(response);
     } catch (err) {
-      toast.error('Greška pri učitavanju termina');
+      toast.error('Error loading appointments');
     } finally {
       setLoading(false);
     }
@@ -121,18 +119,16 @@ const AppointmentsPage = () => {
       const twoWeeksBefore = moment().subtract(14, 'days');
 
       if (direction === 'next') {
-        // Proveri da li je unutar dozvoljenog opsega
         const testDate = moment(newDate).add(3, 'days');
         if (testDate.isAfter(twoWeeksLater)) {
-          toast.info('Možete videti samo dve nedelje unapred');
+          toast.info('You can only view two weeks ahead');
           return newDate;
         }
         newDate.add(3, 'days');
       } else {
-        // Proveri da li je unutar dozvoljenog opsega
         const testDate = moment(newDate).subtract(3, 'days');
         if (testDate.isBefore(twoWeeksBefore)) {
-          toast.info('Možete videti samo dve nedelje unazad');
+          toast.info('You can only view two weeks back');
           return newDate;
         }
         newDate.subtract(3, 'days');
@@ -146,8 +142,8 @@ const AppointmentsPage = () => {
       return;
     }
 
-    if (!isSlotAvailable(time)) {
-      toast.error('Ovaj termin je već rezervisan');
+    if (isSlotBooked(time)) {
+      toast.error('This time slot is already booked');
       return;
     }
     
@@ -155,6 +151,7 @@ const AppointmentsPage = () => {
       startTime: moment(time),
       endTime: moment(time).add(1, 'hour')
     });
+    setTimeInput(time.format('HH:mm'));
     setSelectedEvent(null);
     setModalIsOpen(true);
   };
@@ -165,10 +162,31 @@ const AppointmentsPage = () => {
     setModalIsOpen(true);
   };
 
+  const handleTimeChange = (e) => {
+    const value = e.target.value;
+    setTimeInput(value);
+    
+    if (/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {
+      const [hours, minutes] = value.split(':');
+      // Only allow 00 or 30 minutes
+      const roundedMinutes = Math.round(minutes / 30) * 30;
+      const newTime = moment(selectedSlot.startTime)
+        .hour(hours)
+        .minute(roundedMinutes)
+        .second(0);
+      
+      setSelectedSlot({
+        startTime: newTime,
+        endTime: moment(newTime).add(1, 'hour')
+      });
+      setTimeInput(newTime.format('HH:mm'));
+    }
+  };
+
   const onCreateAppointment = async () => {
     try {
-      if (!isSlotAvailable(selectedSlot.startTime)) {
-        toast.error('Ovaj termin je više dostupan');
+      if (isSlotBooked(selectedSlot.startTime)) {
+        toast.error('This time slot is no longer available');
         return;
       }
 
@@ -182,9 +200,9 @@ const AppointmentsPage = () => {
       await fetchAppointments();
       setModalIsOpen(false);
       reset();
-      toast.success('Termin uspešno rezervisan!');
+      toast.success('Appointment booked successfully!');
     } catch (err) {
-      toast.error('Greška pri rezervaciji termina');
+      toast.error('Error creating appointment');
     }
   };
 
@@ -193,9 +211,9 @@ const AppointmentsPage = () => {
       await deleteAppointment(selectedEvent.id);
       setAppointments(appointments.filter(a => a.id !== selectedEvent.id));
       setModalIsOpen(false);
-      toast.success('Termin uspešno otkazan');
+      toast.success('Appointment cancelled successfully');
     } catch (err) {
-      toast.error('Greška pri otkazivanju termina');
+      toast.error('Error cancelling appointment');
     }
   };
 
@@ -212,13 +230,11 @@ const AppointmentsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments calendar</h1>
-          <p className="text-gray-600">Reserve your appointments</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Appointments Calendar</h1>
+          <p className="text-gray-600">Book your tennis court time</p>
         </div>
 
-        {/* Controls */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-2">
             <button 
@@ -245,13 +261,12 @@ const AppointmentsPage = () => {
           </h2>
         </div>
 
-        {/* Scheduler */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <div className="grid grid-cols-3 gap-4">
             {generateDays().map(day => (
               <div key={day.format('YYYY-MM-DD')} className="border rounded-lg">
                 <div className="bg-gray-50 p-3 border-b text-center font-medium">
-                  {day.format('dddd, D. MMMM')}
+                  {day.format('dddd, MMMM D')}
                 </div>
                 <div className="p-2">
                   {generateTimeSlots().map(timeSlot => {
@@ -260,19 +275,22 @@ const AppointmentsPage = () => {
                       .minute(timeSlot.minute());
                     
                     const appointment = appointments.find(app => 
-                      moment(app.startTime).isSame(slotTime, 'hour')
+                      moment(app.startTime).isSameOrBefore(slotTime) && 
+                      moment(app.endTime).isAfter(slotTime)
                     );
+
+                    const isBooked = isSlotBooked(slotTime);
 
                     return (
                       <div
                         key={slotTime.format('HH:mm')}
                         className={`p-3 mb-2 rounded-lg cursor-pointer ${
-                          appointment 
+                          isBooked 
                             ? 'bg-blue-600 text-white'
                             : 'bg-gray-100 hover:bg-gray-200'
                         }`}
                         onClick={() => 
-                          appointment 
+                          isBooked 
                             ? handleEventClick(appointment) 
                             : handleSlotClick(slotTime)
                         }
@@ -281,7 +299,7 @@ const AppointmentsPage = () => {
                           <span className="font-medium">
                             {slotTime.format('HH:mm')}
                           </span>
-                          {appointment && (
+                          {isBooked && (
                             <span>
                               {appointment.user.firstName} {appointment.user.lastName}
                             </span>
@@ -297,21 +315,20 @@ const AppointmentsPage = () => {
         </div>
       </div>
 
-      {/* Appointment Details Modal */}
       {selectedEvent && (
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={() => setModalIsOpen(false)}
           style={customStyles}
-          contentLabel="Detalji termina"
+          contentLabel="Appointment Details"
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Detalji termina</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Appointment Details</h2>
           <div className="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
             <div className="font-medium text-blue-800 mb-2">
-              Sa: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
+              With: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
             </div>
             <div className="text-gray-700">
-              <div>{moment(selectedEvent.startTime).format('D. MMMM YYYY')}</div>
+              <div>{moment(selectedEvent.startTime).format('MMMM D, YYYY')}</div>
               <div>
                 {moment(selectedEvent.startTime).format('HH:mm')} - {moment(selectedEvent.endTime).format('HH:mm')}
               </div>
@@ -324,7 +341,7 @@ const AppointmentsPage = () => {
                 onClick={onDeleteAppointment}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
               >
-                Cancel appointment
+                Cancel Appointment
               </button>
             )}
             <button
@@ -337,27 +354,28 @@ const AppointmentsPage = () => {
         </Modal>
       )}
 
-      {/* Create Appointment Modal */}
       {selectedSlot && (
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={() => setModalIsOpen(false)}
           style={customStyles}
-          contentLabel="Rezervacija termina"
+          contentLabel="Book Court Time"
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Rezervacija terena</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Court Time</h2>
           <form onSubmit={handleSubmit(onCreateAppointment)}>
             <div className="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
-              <label className="block text-sm font-medium text-blue-800 mb-1">Datum i vreme</label>
-              <div className="text-gray-700">
-                {selectedSlot && (
-                  <>
-                    <div>{selectedSlot.startTime.format('D. MMMM YYYY')}</div>
-                    <div>
-                      {selectedSlot.startTime.format('HH:mm')} - {selectedSlot.endTime.format('HH:mm')}
-                    </div>
-                  </>
-                )}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-blue-800 mb-1">Date</label>
+                <div className="text-gray-700">
+                  {selectedSlot.startTime.format('MMMM D, YYYY')}
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-blue-800 mb-1">Time Slot</label>
+                <div className="text-gray-700">
+                  {selectedSlot.startTime.format('HH:mm')} - {selectedSlot.endTime.format('HH:mm')}
+                </div>
               </div>
             </div>
 
@@ -373,7 +391,7 @@ const AppointmentsPage = () => {
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
-                Book appointment
+                Book Appointment
               </button>
             </div>
           </form>
