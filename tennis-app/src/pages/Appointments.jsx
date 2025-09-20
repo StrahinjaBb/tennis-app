@@ -44,6 +44,7 @@ const AppointmentsPage = () => {
   const [currentDate, setCurrentDate] = useState(moment());
   const [timeInput, setTimeInput] = useState('');
   const [duration, setDuration] = useState(60); // Default to 1 hour
+  const [appointmentName, setAppointmentName] = useState(''); // New state for appointment name
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
 
@@ -51,7 +52,7 @@ const AppointmentsPage = () => {
   const generateDays = () => {
     const days = [];
     const startDate = moment(currentDate).startOf('day');
-    
+
     for (let i = 0; i < 3; i++) {
       days.push(moment(startDate).add(i, 'days'));
     }
@@ -63,7 +64,7 @@ const AppointmentsPage = () => {
     const slots = [];
     const startTime = moment().startOf('day').hour(8); // 8 AM
     const endTime = moment().startOf('day').hour(23); // 11 PM
-    
+
     let time = moment(startTime);
     while (time.isSameOrBefore(endTime)) {
       slots.push(moment(time));
@@ -85,7 +86,7 @@ const AppointmentsPage = () => {
   const isDurationAvailable = useCallback((startTime, durationMinutes) => {
     const endTime = moment(startTime).add(durationMinutes, 'minutes');
     let currentTime = moment(startTime);
-    
+
     while (currentTime.isBefore(endTime)) {
       if (isSlotBooked(currentTime)) {
         return false;
@@ -161,13 +162,14 @@ const AppointmentsPage = () => {
       toast.error('This time slot is already booked');
       return;
     }
-    
+
     setSelectedSlot({
       startTime: moment(time),
       endTime: moment(time).add(1, 'hour')
     });
     setTimeInput(time.format('HH:mm'));
     setDuration(60); // Reset to default 1 hour
+    setAppointmentName(''); // Reset appointment name
     setSelectedEvent(null);
     setModalIsOpen(true);
   };
@@ -181,7 +183,7 @@ const AppointmentsPage = () => {
   const handleTimeChange = (e) => {
     const value = e.target.value;
     setTimeInput(value);
-    
+
     if (/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {
       const [hours, minutes] = value.split(':');
       const roundedMinutes = Math.round(minutes / 30) * 30;
@@ -189,7 +191,7 @@ const AppointmentsPage = () => {
         .hour(hours)
         .minute(roundedMinutes)
         .second(0);
-      
+
       setSelectedSlot({
         startTime: newTime,
         endTime: moment(newTime).add(duration, 'minutes')
@@ -206,6 +208,10 @@ const AppointmentsPage = () => {
     }));
   };
 
+  const handleAppointmentNameChange = (e) => {
+    setAppointmentName(e.target.value);
+  };
+
   const onCreateAppointment = async () => {
     try {
       if (!isDurationAvailable(selectedSlot.startTime, duration)) {
@@ -216,13 +222,15 @@ const AppointmentsPage = () => {
       const appointmentData = {
         startTime: selectedSlot.startTime.format('YYYY-MM-DDTHH:mm:ss'),
         endTime: selectedSlot.endTime.format('YYYY-MM-DDTHH:mm:ss'),
-        user: user
+        user: user,
+        appointmentName: appointmentName || null // Add appointment name to the request
       };
 
       await createAppointment(appointmentData);
       await fetchAppointments();
       setModalIsOpen(false);
       reset();
+      setAppointmentName(''); // Reset appointment name
       toast.success('Appointment booked successfully!');
     } catch (err) {
       toast.error('Error creating appointment');
@@ -260,20 +268,20 @@ const AppointmentsPage = () => {
 
         <div className="flex justify-between items-center mb-4">
           <div className="flex space-x-2">
-            <button 
-              onClick={() => navigateDays('prev')} 
+            <button
+              onClick={() => navigateDays('prev')}
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
               &lt; Previous
             </button>
-            <button 
-              onClick={goToToday} 
+            <button
+              onClick={goToToday}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
             >
               Today
             </button>
-            <button 
-              onClick={() => navigateDays('next')} 
+            <button
+              onClick={() => navigateDays('next')}
               className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
               Next &gt;
@@ -296,9 +304,9 @@ const AppointmentsPage = () => {
                     const slotTime = moment(day)
                       .hour(timeSlot.hour())
                       .minute(timeSlot.minute());
-                    
-                    const appointment = appointments.find(app => 
-                      moment(app.startTime).isSameOrBefore(slotTime) && 
+
+                    const appointment = appointments.find(app =>
+                      moment(app.startTime).isSameOrBefore(slotTime) &&
                       moment(app.endTime).isAfter(slotTime)
                     );
 
@@ -307,14 +315,13 @@ const AppointmentsPage = () => {
                     return (
                       <div
                         key={slotTime.format('HH:mm')}
-                        className={`p-3 mb-2 rounded-lg cursor-pointer ${
-                          isBooked 
+                        className={`p-3 mb-2 rounded-lg cursor-pointer ${isBooked
                             ? 'bg-blue-600 text-white'
                             : 'bg-gray-100 hover:bg-gray-200'
-                        }`}
-                        onClick={() => 
-                          isBooked 
-                            ? handleEventClick(appointment) 
+                          }`}
+                        onClick={() =>
+                          isBooked
+                            ? handleEventClick(appointment)
                             : handleSlotClick(slotTime)
                         }
                       >
@@ -324,7 +331,7 @@ const AppointmentsPage = () => {
                           </span>
                           {isBooked && (
                             <span>
-                              {appointment.user.firstName} {appointment.user.lastName}
+                              {appointment.appointmentName ? appointment.appointmentName : `${appointment.user.firstName} ${appointment.user.lastName}`}
                             </span>
                           )}
                         </div>
@@ -350,6 +357,11 @@ const AppointmentsPage = () => {
             <div className="font-medium text-blue-800 mb-2">
               With: {selectedEvent.user.firstName} {selectedEvent.user.lastName}
             </div>
+            {selectedEvent.appointmentName && (
+              <div className="font-medium text-blue-800 mb-2">
+                Appointment: {selectedEvent.appointmentName}
+              </div>
+            )}
             <div className="text-gray-700">
               <div>{moment(selectedEvent.startTime).format('MMMM D, YYYY')}</div>
               <div>
@@ -413,12 +425,28 @@ const AppointmentsPage = () => {
                   </button>
                 </div>
               </div>
-              
-              <div>
+
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-blue-800 mb-1">Time Slot</label>
                 <div className="text-gray-700">
                   {selectedSlot.startTime.format('HH:mm')} - {selectedSlot.endTime.format('HH:mm')}
                 </div>
+              </div>
+
+              {/* Appointment Name Input Field */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-blue-800 mb-1">
+                  Appointment Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={appointmentName}
+                  onChange={handleAppointmentNameChange}
+                  placeholder="e.g., Practice session, Match with John, etc."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  maxLength={100}
+                />
+                <p className="text-xs text-gray-500 mt-1">Max 100 characters</p>
               </div>
             </div>
 

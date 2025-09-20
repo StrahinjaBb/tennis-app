@@ -20,6 +20,7 @@ public class AppointmentConversionUtils {
         appointment.setUser(UserConversionUtils.apiModelToDbModel(apiModel.getUser()));
         appointment.setStartTime(apiModel.getStartTime());
         appointment.setEndTime(apiModel.getEndTime());
+        appointment.setAppointmentName(apiModel.getAppointmentName());
         return appointment;
     }
     //  db -> dto

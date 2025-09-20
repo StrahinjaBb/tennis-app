@@ -7,18 +7,18 @@ public class AppointmentApiModel {
     private UserApiModel user;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private String appointmentName;
 
-    public AppointmentApiModel(Long id, UserApiModel user, LocalDateTime startTime, LocalDateTime endTime) {
-        this.id = id;
+    public AppointmentApiModel(UserApiModel user, LocalDateTime startTime, LocalDateTime endTime, String appointmentName) {
         this.user = user;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.appointmentName = appointmentName;
     }
 
-    public AppointmentApiModel(UserApiModel user, LocalDateTime startTime, LocalDateTime endTime) {
-        this.user = user;
-        this.startTime = startTime;
-        this.endTime = endTime;
+    public AppointmentApiModel(Long id, UserApiModel user, LocalDateTime startTime, LocalDateTime endTime, String appointmentName) {
+        this(user, startTime, endTime, appointmentName);
+        this.id = id;
     }
 
     public AppointmentApiModel() {
@@ -55,5 +55,13 @@ public class AppointmentApiModel {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public String getAppointmentName() {
+        return appointmentName;
+    }
+
+    public void setAppointmentName(String appointmentName) {
+        this.appointmentName = appointmentName;
     }
 }
