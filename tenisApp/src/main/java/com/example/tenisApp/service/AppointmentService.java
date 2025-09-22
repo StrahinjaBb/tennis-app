@@ -1,6 +1,7 @@
 package com.example.tenisApp.service;
 
 import com.example.tenisApp.api.models.UserApiModel;
+import com.example.tenisApp.enums.RoleType;
 import com.example.tenisApp.model.Appointment;
 import com.example.tenisApp.model.User;
 import com.example.tenisApp.repository.AppointmentRepository;
@@ -28,6 +29,10 @@ public class AppointmentService {
         User user = userRepository.findById(appointment.getUser().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         appointment.setUser(user);
+        if (user.getRoleType() != RoleType.ADMIN) {
+            appointment.setAppointmentName(null);
+        }
+
         return appointmentRepository.save(appointment);
     }
 

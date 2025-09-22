@@ -434,7 +434,7 @@ const AppointmentsPage = () => {
               </div>
 
               {/* Appointment Name Input Field */}
-              <div className="mb-4">
+              {user.roleType === "ADMIN" && (<div className="mb-4">
                 <label className="block text-sm font-medium text-blue-800 mb-1">
                   Appointment Name (Optional)
                 </label>
@@ -447,7 +447,7 @@ const AppointmentsPage = () => {
                   maxLength={100}
                 />
                 <p className="text-xs text-gray-500 mt-1">Max 100 characters</p>
-              </div>
+              </div>)}
             </div>
 
             <div className="flex justify-end space-x-3">
