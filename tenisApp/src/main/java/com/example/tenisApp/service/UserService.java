@@ -1,7 +1,6 @@
 package com.example.tenisApp.service;
 
 import com.example.tenisApp.api.models.UserApiModel;
-import com.example.tenisApp.dto.UserDTO;
 import com.example.tenisApp.dto.conversion.UserConversionUtils;
 import com.example.tenisApp.enums.League;
 import com.example.tenisApp.model.User;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
