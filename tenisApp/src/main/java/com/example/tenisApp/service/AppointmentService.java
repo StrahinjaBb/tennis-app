@@ -1,29 +1,28 @@
 package com.example.tenisApp.service;
 
-import com.example.tenisApp.api.models.UserApiModel;
 import com.example.tenisApp.enums.RoleType;
 import com.example.tenisApp.model.Appointment;
 import com.example.tenisApp.model.User;
 import com.example.tenisApp.repository.AppointmentRepository;
 import com.example.tenisApp.repository.UserRepository;
-import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.naming.OperationNotSupportedException;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
 public class AppointmentService {
+    private final EmailService emailService;
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, UserRepository userRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, UserRepository userRepository, EmailService emailService) {
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     public List<Appointment> getAllAppointments() {
@@ -39,6 +38,8 @@ public class AppointmentService {
         if (user.getRoleType() != RoleType.ADMIN) {
             appointment.setAppointmentName(null);
         }
+
+        emailService.sendAppointmentCreatedEmail(appointment);
 
         return appointmentRepository.save(appointment);
     }
