@@ -66,8 +66,8 @@ const PlayersList = () => {
                 onChange={handleLeagueChange}
                 className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all"
               >
-                <option value="A">League A</option>
                 <option value="B">League B</option>
+                <option value="C">League C</option>
               </select>
             </div>
             <div className="w-full sm:w-auto">

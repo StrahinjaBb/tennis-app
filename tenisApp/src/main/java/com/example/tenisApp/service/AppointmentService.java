@@ -6,9 +6,14 @@ import com.example.tenisApp.model.Appointment;
 import com.example.tenisApp.model.User;
 import com.example.tenisApp.repository.AppointmentRepository;
 import com.example.tenisApp.repository.UserRepository;
+import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.naming.OperationNotSupportedException;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -36,11 +41,23 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    public void deleteAppointment(Long id) {
+    public void deleteAppointment(Long id) throws OperationNotSupportedException {
+        if (!canDeleteAppointment(id)) {
+            throw new OperationNotSupportedException("Can't delete appointment less then 6 hours before it starts.");
+        }
         appointmentRepository.deleteById(id);
     }
 
     public List<Appointment> getAppointmentsForUser(Long userId) {
         return appointmentRepository.findByUserId(userId);
+    }
+
+    private boolean canDeleteAppointment(Long id) {
+        Appointment appointment = appointmentRepository.getReferenceById(id);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = appointment.getStartTime();
+
+        long hoursUntilStart = ChronoUnit.HOURS.between(now, startTime);
+        return hoursUntilStart >= 7;
     }
 }
