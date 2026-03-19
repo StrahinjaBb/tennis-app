@@ -4,7 +4,7 @@ import { getLeaguePlayers } from '../api/userApi';
 const PlayersList = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedLeague, setSelectedLeague] = useState('A');
+  const [selectedLeague, setSelectedLeague] = useState('B');
   const [error, setError] = useState(null);
 
   const fetchPlayers = async (league) => {
@@ -134,7 +134,7 @@ const PlayersList = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          player.league === 'A' 
+                          player.league === 'B' 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-purple-100 text-purple-800'
                         }`}>
