@@ -10,6 +10,15 @@ import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
 
+const ROLE_OPTIONS = ['ADMIN', 'USER', 'OBSERVER'];
+const LEAGUE_OPTIONS = ['B', 'C'];
+
+const normalizeOptionValue = (value, options) => {
+  if (!value) return '';
+  const normalizedValue = String(value).toUpperCase();
+  return options.includes(normalizedValue) ? normalizedValue : String(value);
+};
+
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -150,7 +159,11 @@ const UserManagement = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map(user => (
+                {users.map(user => {
+                  const roleValue = normalizeOptionValue(user.roleType, ROLE_OPTIONS);
+                  const leagueValue = normalizeOptionValue(user.league, LEAGUE_OPTIONS);
+
+                  return (
                   <tr key={user.id} className="hover:bg-blue-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -174,11 +187,14 @@ const UserManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
-                        value={user.roleType}
+                        value={roleValue}
                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
                         className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                       >
                         <option value="">- Select -</option>
+                        {roleValue && !ROLE_OPTIONS.includes(roleValue) && (
+                          <option value={roleValue}>{roleValue}</option>
+                        )}
                         <option value="ADMIN">ADMIN</option>
                         <option value="USER">USER</option>
                         <option value="OBSERVER">OBSERVER</option>
@@ -186,13 +202,16 @@ const UserManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
-                        value={user.league || ''}
+                        value={leagueValue}
                         onChange={(e) => handleLeagueChange(user.id, e.target.value)}
                         className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                       >
                         <option value="">- Select -</option>
-                        <option value="A">League A</option>
+                        {leagueValue && !LEAGUE_OPTIONS.includes(leagueValue) && (
+                          <option value={leagueValue}>{leagueValue}</option>
+                        )}
                         <option value="B">League B</option>
+                        <option value="C">League C</option>
                       </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
@@ -235,7 +254,8 @@ const UserManagement = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                );
+                })}
               </tbody>
             </table>
           </div>
