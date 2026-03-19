@@ -27,7 +27,9 @@ public class AppointmentService {
     }
 
     public List<Appointment> getAllAppointments() {
-        return appointmentRepository.findAll();
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+
+        return appointmentRepository.findByStartTimeAfter(threeDaysAgo);
     }
 
     public Appointment createAppointment(Appointment appointment) {
