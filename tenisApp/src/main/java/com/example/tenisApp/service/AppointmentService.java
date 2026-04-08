@@ -45,22 +45,10 @@ public class AppointmentService {
     }
 
     public void deleteAppointment(Long id) throws OperationNotSupportedException {
-        if (!canDeleteAppointment(id)) {
-            throw new OperationNotSupportedException("Can't delete appointment less then 6 hours before it starts.");
-        }
         appointmentRepository.deleteById(id);
     }
 
     public List<Appointment> getAppointmentsForUser(Long userId) {
         return appointmentRepository.findByUserId(userId);
-    }
-
-    private boolean canDeleteAppointment(Long id) {
-        Appointment appointment = appointmentRepository.getReferenceById(id);
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startTime = appointment.getStartTime();
-
-        long hoursUntilStart = ChronoUnit.HOURS.between(now, startTime);
-        return hoursUntilStart >= 7;
     }
 }

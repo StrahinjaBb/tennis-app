@@ -5,6 +5,7 @@ import com.example.tenisApp.api.request.*;
 import com.example.tenisApp.dto.conversion.UserConversionUtils;
 import com.example.tenisApp.model.User;
 import com.example.tenisApp.service.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,16 @@ public class UserController {
     @PostMapping("/league")
     public ResponseEntity<List<UserApiModel>> getLeagueUsers(@RequestBody GetLeagueUsersRequest request) {
         return ResponseEntity.ok(userService.getLeagueUsers(request.getLeague()));
+    }
+
+    @PutMapping("/{id}/reset")
+    public ResponseEntity<UserApiModel> resetUserMathcesAndPoints(@PathVariable Long id) {
+        return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(userService.resetUserMathcesAndPoints(id)));
+    }
+
+    @PutMapping("/reset")
+    public void resetAllUsers() {
+        userService.resetAllUsers();
     }
 
     @PostMapping

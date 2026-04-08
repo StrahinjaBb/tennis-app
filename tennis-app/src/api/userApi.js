@@ -90,3 +90,11 @@ export const getLeaguePlayers = async (league) => {
 export const deleteUser = async (id) => {
     await axios.delete(`${USERS_API_URL}/${id}`);
 };
+
+export const resetAllUsers = async () => {
+  await axios.post(`${USERS_API_URL}/reset`);
+};
+
+export const resetUserMatchesAndPoints = async (userId) => {
+  await axios.post(`${USERS_API_URL}/${userId}/reset`);
+};
