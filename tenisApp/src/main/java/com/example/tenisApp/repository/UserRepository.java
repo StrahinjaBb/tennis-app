@@ -19,6 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByLeagueOrderByPointsDesc(League league);
     @Modifying
     @Transactional
-    @Query(value = "UPDATE users SET matches = 0, points = 0 WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE app_user SET matches = 0, points = 0 WHERE id = :id", nativeQuery = true)
     int resetUserMatchesAndPoints(@Param("id") Long id);
 }
