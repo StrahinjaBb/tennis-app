@@ -27,8 +27,11 @@ const UserManagement = () => {
   const [pointsInput, setPointsInput] = useState({});
   const [matchesInput, setMatchesInput] = useState({});
   const [error, setError] = useState(null);
-  const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    actionType: null,
+    userId: null
+  });
 
   const modalStyles = {
     content: {
@@ -104,18 +107,20 @@ const UserManagement = () => {
     }
   };
 
-  const confirmDelete = (userId) => {
-    setUserToDelete(userId);
-    setDeleteModalIsOpen(true);
+  const openConfirmationModal = (actionType, userId = null) => {
+    setConfirmModal({
+      isOpen: true,
+      actionType,
+      userId
+    });
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (userId) => {
     try {
-      await deleteUser(userToDelete);
+      await deleteUser(userId);
       await loadUsers();
-      setDeleteModalIsOpen(false);
     } catch (err) {
-      setError(`Failed to delete user ${userToDelete}`);
+      setError(`Failed to delete user ${userId}`);
       console.error('Error deleting user:', err);
     }
   };
@@ -138,6 +143,26 @@ const UserManagement = () => {
       setError(`Failed to reset matches and points for user ${userId}`);
       console.error('Error resetting matches and points:', err);
     }
+  };
+
+  const closeConfirmationModal = () => {
+    setConfirmModal({
+      isOpen: false,
+      actionType: null,
+      userId: null
+    });
+  };
+
+  const executeConfirmedAction = async () => {
+    if (confirmModal.actionType === 'delete' && confirmModal.userId) {
+      await handleDelete(confirmModal.userId);
+    } else if (confirmModal.actionType === 'resetUser' && confirmModal.userId) {
+      await handleResetUserMatchesAndPoints(confirmModal.userId);
+    } else if (confirmModal.actionType === 'resetAll') {
+      await handleResetAllUsers();
+    }
+
+    closeConfirmationModal();
   };
 
   if (loading) return (
@@ -177,7 +202,14 @@ const UserManagement = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Points</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Matches</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Add Points</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">
+                    <button
+                      onClick={() => openConfirmationModal('resetAll')}
+                      className="px-3 py-1.5 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-300 normal-case"
+                    >
+                      Reset All Users
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -265,8 +297,9 @@ const UserManagement = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex flex-col items-end gap-2">
                       <button
-                        onClick={() => confirmDelete(user.id)}
+                        onClick={() => openConfirmationModal('delete', user.id)}
                         className="text-red-600 hover:text-red-900 inline-flex items-center"
                       >
                         <svg className="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,6 +307,13 @@ const UserManagement = () => {
                         </svg>
                         Delete
                       </button>
+                      <button
+                        onClick={() => openConfirmationModal('resetUser', user.id)}
+                        className="text-yellow-700 hover:text-yellow-800 inline-flex items-center"
+                      >
+                        Reset
+                      </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -283,28 +323,32 @@ const UserManagement = () => {
           </div>
         </div>
 
-        {/* Delete Confirmation Modal */}
+        {/* Action Confirmation Modal */}
         <Modal
-          isOpen={deleteModalIsOpen}
-          onRequestClose={() => setDeleteModalIsOpen(false)}
+          isOpen={confirmModal.isOpen}
+          onRequestClose={closeConfirmationModal}
           style={modalStyles}
-          contentLabel="Confirm Deletion"
+          contentLabel="Confirm Action"
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Confirm Deletion</h2>
-          <p className="mb-6 text-gray-600">Are you sure you want to delete this user? This action cannot be undone.</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Confirm Action</h2>
+          <p className="mb-6 text-gray-600">
+            {confirmModal.actionType === 'delete' && 'Are you sure you want to delete this user? This action cannot be undone.'}
+            {confirmModal.actionType === 'resetUser' && 'Are you sure you want to reset points and matches for this user?'}
+            {confirmModal.actionType === 'resetAll' && 'Are you sure you want to reset points and matches for all users?'}
+          </p>
           
           <div className="flex justify-end space-x-3">
             <button
-              onClick={() => setDeleteModalIsOpen(false)}
+              onClick={closeConfirmationModal}
               className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
             >
               Cancel
             </button>
             <button
-              onClick={handleDelete}
+              onClick={executeConfirmedAction}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
             >
-              Delete User
+              Confirm
             </button>
           </div>
         </Modal>
