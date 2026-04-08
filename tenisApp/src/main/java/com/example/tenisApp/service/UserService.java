@@ -77,8 +77,8 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    public User resetUserMathcesAndPoints(Long id) {
-        return userRepository.resetUserMatchesAndPoints(id).orElse(null);
+    public int resetUserMathcesAndPoints(Long id) {
+        return userRepository.resetUserMatchesAndPoints(id);
     }
 
     public void resetAllUsers() {

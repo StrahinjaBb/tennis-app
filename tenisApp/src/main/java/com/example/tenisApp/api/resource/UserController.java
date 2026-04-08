@@ -38,8 +38,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}/reset")
-    public ResponseEntity<UserApiModel> resetUserMathcesAndPoints(@PathVariable Long id) {
-        return ResponseEntity.ok(UserConversionUtils.dbModelToApiModel(userService.resetUserMathcesAndPoints(id)));
+    public void resetUserMathcesAndPoints(@PathVariable Long id) {
+        userService.resetUserMathcesAndPoints(id);
     }
 
     @PutMapping("/reset")
