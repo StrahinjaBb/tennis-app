@@ -92,9 +92,9 @@ export const deleteUser = async (id) => {
 };
 
 export const resetAllUsers = async () => {
-  await axios.post(`${USERS_API_URL}/reset`);
+  await axios.put(`${USERS_API_URL}/reset`);
 };
 
 export const resetUserMatchesAndPoints = async (userId) => {
-  await axios.post(`${USERS_API_URL}/${userId}/reset`);
+  await axios.put(`${USERS_API_URL}/${userId}/reset`);
 };
