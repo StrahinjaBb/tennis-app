@@ -5,6 +5,8 @@ import {
   updateUserPoints, 
   updateUserLeague, 
   deleteUser, 
+  resetAllUsers,
+  resetUserMatchesAndPoints,
 } from '../api/userApi';
 import Modal from 'react-modal';
 
@@ -115,6 +117,26 @@ const UserManagement = () => {
     } catch (err) {
       setError(`Failed to delete user ${userToDelete}`);
       console.error('Error deleting user:', err);
+    }
+  };
+
+  const handleResetAllUsers = async () => {
+    try {
+      await resetAllUsers();
+      await loadUsers();
+    } catch (err) {
+      setError('Failed to reset all users');
+      console.error('Error resetting all users:', err);
+    }
+  };
+
+  const handleResetUserMatchesAndPoints = async (userId) => {
+    try {
+      await resetUserMatchesAndPoints(userId);
+      await loadUsers();
+    } catch (err) {
+      setError(`Failed to reset matches and points for user ${userId}`);
+      console.error('Error resetting matches and points:', err);
     }
   };
 

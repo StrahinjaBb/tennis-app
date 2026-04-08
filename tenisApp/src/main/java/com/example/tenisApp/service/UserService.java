@@ -77,6 +77,16 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    public User resetUserMathcesAndPoints(Long id) {
+        return userRepository.resetUserMatchesAndPoints(id).orElse(null);
+    }
+
+    public void resetAllUsers() {
+        for (User user : userRepository.findAll()) {
+            this.resetUserMathcesAndPoints(user.getId());
+        }
+    }
+
     public UserApiModel authenticate(String email, String username, String password) {
         for (User user : userRepository.findAll()) {
             if (user.getEmail().equals(email) && user.getUsername().equals(username) && user.getPassword().equals(password)) {

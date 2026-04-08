@@ -35,6 +35,7 @@ const customStyles = {
 Modal.setAppElement('#root');
 
 const AppointmentsPage = () => {
+  const DELETE_LOCK_HOURS = 7;
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -239,6 +240,11 @@ const AppointmentsPage = () => {
 
   const onDeleteAppointment = async () => {
     try {
+      if (!canDeleteAppointment(selectedEvent.id)) {
+        toast.error('You are not authorized to delete this appointment');
+        return;
+      }
+
       await deleteAppointment(selectedEvent.id);
       setAppointments(appointments.filter(a => a.id !== selectedEvent.id));
       setModalIsOpen(false);
@@ -247,6 +253,28 @@ const AppointmentsPage = () => {
       toast.error('Error cancelling appointment');
     }
   };
+
+function canDeleteAppointment(appointmentId) {
+  if (user?.roleType === 'ADMIN') 
+    return true;
+
+  const appointment = 
+    (selectedEvent?.id === appointmentId ? selectedEvent : null) ||
+    appointments.find((a) => a.id === appointmentId);
+
+  if (!appointment?.startTime)
+     return false;
+
+  if (appointment.user.id !== user.id)
+    return false;
+
+  const startTime = moment(appointment.startTime, 'YYYY-MM-DDTHH:mm:ss', true);
+  if (!startTime.isValid()) 
+    return false;
+
+  const hoursUntilStart = startTime.diff(moment(), 'hours', true);
+  return hoursUntilStart >= DELETE_LOCK_HOURS;
+}
 
   const goToToday = () => {
     setCurrentDate(moment());

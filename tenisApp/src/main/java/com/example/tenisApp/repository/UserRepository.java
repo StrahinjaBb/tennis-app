@@ -13,4 +13,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     List<User> findByLeagueOrderByPointsDesc(League league);
+    Optional<User> resetUserMatchesAndPoints(Long id);
 }
