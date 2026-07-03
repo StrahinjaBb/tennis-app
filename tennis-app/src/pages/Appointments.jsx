@@ -258,22 +258,7 @@ function canDeleteAppointment(appointmentId) {
   if (user?.roleType === 'ADMIN') 
     return true;
 
-  const appointment = 
-    (selectedEvent?.id === appointmentId ? selectedEvent : null) ||
-    appointments.find((a) => a.id === appointmentId);
-
-  if (!appointment?.startTime)
-     return false;
-
-  if (appointment.user.id !== user.id)
-    return false;
-
-  const startTime = moment(appointment.startTime, 'YYYY-MM-DDTHH:mm:ss', true);
-  if (!startTime.isValid()) 
-    return false;
-
-  const hoursUntilStart = startTime.diff(moment(), 'hours', true);
-  return hoursUntilStart >= DELETE_LOCK_HOURS;
+  return false;
 }
 
   const goToToday = () => {
